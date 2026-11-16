@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#050D09">
+<title>Agenda · Anvil</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --preto: #050D09; --fundo2: #0A1510; --cartao: #0E1B15; --cartao2: #13241C; --floresta: #103C2D;
+    --verde: #00EC86; --salvia: #86A195; --branco: #F4F6F0; --linha: rgba(134, 161, 149, .18); --linha2: rgba(134, 161, 149, .32);
+    --alerta: #FF6B5E; --ambar: #FFC46B;
+    --t-gravacao: #00EC86; --t-cliente: #7CC4FF; --t-reuniao: #C8B6FF; --t-prospect: #FFD27A; --t-pagar: #FF9F6B; --t-outro: #86A195;
+    --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--preto); color: var(--branco); }
+  body { font: 500 15px/1.4 Manrope, system-ui, "Segoe UI", sans-serif; min-height: 100dvh; -webkit-font-smoothing: antialiased; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :focus-visible { outline: 2px solid var(--verde); outline-offset: 2px; border-radius: 6px; }
+  [hidden] { display: none !important; }
+
+  /* topo */
+  .topo { position: sticky; top: 0; z-index: 5; background: rgba(5, 13, 9, .94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--linha); }
+  .topo-in { max-width: 1500px; margin: 0 auto; padding: 12px 16px 10px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px 16px; align-items: center; }
+  .marca { display: flex; align-items: center; gap: 9px; }
+  .marca svg { height: 22px; width: auto; color: var(--verde); display: block; }
+  .marca b { font: 500 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--salvia); padding-top: 2px; }
+  .abas { display: flex; gap: 2px; justify-self: center; background: var(--fundo2); border: 1px solid var(--linha); border-radius: 999px; padding: 3px; }
+  .abas button { padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; color: var(--salvia); }
+  .abas button[aria-selected="true"] { background: var(--branco); color: var(--preto); }
+  .abas .n { font: 500 11px var(--mono); margin-left: 5px; opacity: .8; }
+  .eu { width: 32px; height: 32px; border-radius: 50%; background: var(--cartao2); border: 1px solid var(--linha2); font-weight: 800; font-size: 13px; }
+  .nav { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; }
+  .nav h1 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin: 0 auto 0 0; }
+  .nav h1 small { font: 500 12px var(--mono); color: var(--salvia); margin-left: 8px; letter-spacing: 0; }
+  .bt { height: 34px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--linha2); font-weight: 700; font-size: 13px; background: var(--fundo2); }
+  .bt:hover { border-color: var(--salvia); }
+  .bt.seta { width: 34px; padding: 0; font-size: 17px; line-height: 1; }
+  .bt.cheio { background: var(--verde); color: var(--preto); border-color: var(--verde); }
+  .bt.perigo { color: var(--alerta); border-color: rgba(255, 107, 94, .45); }
+  .resumo { grid-column: 1 / -1; font-size: 13px; color: var(--salvia); min-height: 18px; }
+  .resumo b { color: var(--branco); font-weight: 700; }
+  .resumo .al { color: var(--alerta); font-weight: 700; }
+
+  main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 96px; }
+
+  /* semana */
+  .semana { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: start; }
+  .dia { background: var(--fundo2); border: 1px solid var(--linha); border-radius: 14px; min-height: 180px; display: flex; flex-direction: column; }
+  .dia.hoje { border-color: var(--verde); }
+  .dia.passado { opacity: .55; }
+  .dia > header { display: flex; align-items: baseline; gap: 6px; padding: 10px 8px 8px 10px; min-width: 0; }
+  .dsem { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--salvia); }
+  .dnum { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+  .dia.hoje .dnum { color: var(--verde); }
+  .carga { margin-left: auto; font: 500 11px var(--mono); color: var(--salvia); padding: 2px 7px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .carga.cheio { color: var(--ambar); border-color: rgba(255, 196, 107, .4); }
+  .carga.bate { color: var(--alerta); border-color: rgba(255, 107, 94, .5); }
+  .mais { width: 24px; height: 24px; border-radius: 7px; border: 1px solid var(--linha2); color: var(--salvia); font-size: 16px; line-height: 1; flex: none; align-self: center; }
+  .mais:hover { color: var(--preto); background: var(--verde); border-color: var(--verde); }
+  .cards { display: flex; flex-direction: column; gap: 6px; padding: 0 6px 8px; }
+  .livre { font-size: 12px; color: rgba(134, 161, 149, .6); padding: 2px 6px 10px; }
+
+  .card { text-align: left; width: 100%; background: var(--cartao); border: 1px solid var(--linha); border-left: 3px solid var(--tc, var(--salvia)); border-radius: 10px; padding: 8px 9px; display: grid; gap: 3px; }
+  .card:hover { background: var(--cartao2); }
+  .card.t-gravacao { --tc: var(--t-gravacao); } .card.t-cliente { --tc: var(--t-cliente); } .card.t-reuniao { --tc: var(--t-reuniao); }
+  .card.t-prospect { --tc: var(--t-prospect); } .card.t-pagar { --tc: var(--t-pagar); } .card.t-outro { --tc: var(--t-outro); }
+  .card .l1 { display: flex; align-items: center; gap: 6px; font: 500 11.5px var(--mono); color: var(--tc); }
+  .card .l1 i { font-style: normal; color: var(--salvia); }
+  .card .tit { font-weight: 700; font-size: 13.5px; line-height: 1.25; overflow-wrap: anywhere; }
+  .card .meta { font-size: 12px; color: var(--salvia); overflow-wrap: anywhere; }
+  .card.feito { opacity: .5; } .card.feito .tit { text-decoration: line-through; }
+  .card.bate { border-color: rgba(255, 107, 94, .6); border-left-color: var(--alerta); }
+  .card .av { color: var(--alerta); font: 500 11px var(--mono); }
+  .quem { display: flex; gap: 3px; margin-left: auto; }
+  .quem b { width: 18px; height: 18px; border-radius: 50%; background: var(--c, var(--salvia)); color: var(--preto); font: 800 10px Manrope, sans-serif; display: grid; place-items: center; }
+
+  /* listas (contas e prospects) */
+  .lista { max-width: 760px; display: grid; gap: 8px; }
+  .lista h2 { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--salvia); margin: 14px 2px 2px; }
+  .linha { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; background: var(--fundo2); border: 1px solid var(--linha); border-radius: 12px; padding: 11px 13px; text-align: left; width: 100%; }
+  .linha:hover { background: var(--cartao); }
+  .linha .t { font-weight: 700; overflow-wrap: anywhere; }
+  .linha .s { font-size: 12.5px; color: var(--salvia); grid-column: 1; overflow-wrap: anywhere; }
+  .linha .d { font: 500 12px var(--mono); color: var(--salvia); text-align: right; white-space: nowrap; }
+  .linha .d.venc { color: var(--alerta); }
+  .linha .v { font-weight: 800; text-align: right; white-space: nowrap; }
+  .vazio { color: var(--salvia); padding: 28px 4px; }
+  .cab-lista { display: flex; align-items: center; gap: 10px; max-width: 760px; margin-bottom: 6px; }
+  .cab-lista p { margin: 0 auto 0 0; color: var(--salvia); font-size: 13px; }
+
+  /* botão flutuante (celular) */
+  .fab { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); width: 58px; height: 58px; border-radius: 50%; background: var(--verde); color: var(--preto); font-size: 30px; font-weight: 500; line-height: 1; z-index: 6; display: none; }
+
+  /* ficha */
+  dialog { border: 1px solid var(--linha2); background: var(--fundo2); color: var(--branco); border-radius: 18px; padding: 0; width: min(520px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); }
+  dialog::backdrop { background: rgba(0, 0, 0, .62); }
+  .ficha { padding: 18px 18px 16px; display: grid; gap: 13px; }
+  .ficha h2 { margin: 0; font-size: 17px; font-weight: 800; display: flex; align-items: center; }
+  .ficha h2 button { margin-left: auto; color: var(--salvia); font-size: 22px; line-height: 1; width: 30px; height: 30px; }
+  .campo { display: grid; gap: 5px; }
+  .campo > span, .campo > legend { font: 500 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--salvia); padding: 0; }
+  fieldset.campo { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .ficha input[type=text], .ficha input[type=date], .ficha input[type=time], .ficha input[type=number], .ficha textarea, .ficha select {
+    width: 100%; background: var(--preto); border: 1px solid var(--linha2); border-radius: 10px; padding: 10px 11px; color-scheme: dark; min-width: 0; }
+  .ficha textarea { resize: vertical; min-height: 44px; }
+  .ficha input:focus, .ficha textarea:focus, .ficha select:focus { outline: none; border-color: var(--verde); }
+  #f-titulo { font-size: 16px; font-weight: 700; }
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tres { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips label { position: relative; }
+  .chips input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .chips span { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--linha2); font-weight: 700; font-size: 13px; color: var(--salvia); }
+  .chips span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--salvia)); }
+  .chips input:checked + span { background: var(--branco); color: var(--preto); border-color: var(--branco); }
+  .chips input:focus-visible + span { outline: 2px solid var(--verde); outline-offset: 2px; }
+  .atalhos { display: flex; gap: 6px; margin-top: 2px; }
+  .atalhos button { font-size: 12px; font-weight: 700; color: var(--salvia); border: 1px solid var(--linha); border-radius: 999px; padding: 3px 10px; }
+  .aviso { border-radius: 12px; padding: 10px 12px; font-size: 13px; display: grid; gap: 4px; }
+  .aviso.bate { background: rgba(255, 107, 94, .1); border: 1px solid rgba(255, 107, 94, .5); }
+  .aviso.bate b { color: var(--alerta); }
+  .aviso.cheio { background: rgba(255, 196, 107, .08); border: 1px solid rgba(255, 196, 107, .4); color: var(--ambar); }
+  .aviso .m { font-family: var(--mono); font-size: 12px; }
+  .acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .acoes .bt { height: 42px; padding: 0 16px; font-size: 14px; }
+  .acoes .dir { margin-left: auto; }
+  .erro { color: var(--alerta); font-size: 13px; min-height: 0; }
+
+  /* entrada */
+  .porta { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+  .porta div { max-width: 380px; display: grid; gap: 14px; text-align: center; justify-items: center; }
+  .porta svg { height: 44px; color: var(--verde); }
+  .porta p { margin: 0; color: var(--salvia); }
+  .porta input { width: 100%; background: var(--fundo2); border: 1px solid var(--linha2); border-radius: 10px; padding: 12px; text-align: center; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--branco); color: var(--preto); font-weight: 700; font-size: 13px; padding: 9px 16px; border-radius: 999px; z-index: 20; }
+  .ensaio { background: var(--ambar); color: var(--preto); font: 500 11px var(--mono); text-align: center; padding: 3px; letter-spacing: .08em; }
+
+  @media (max-width: 900px) {
+    .topo-in { grid-template-columns: auto 1fr auto; padding: 10px 14px 8px; }
+    .abas { justify-self: end; }
+    .abas button { padding: 6px 10px; }
+    .nav h1 { font-size: 17px; }
+    .nav .cheio { display: none; }
+    .marca b { display: none; }
+    .abas button { font-size: 12.5px; }
+    .topo-in { gap: 8px 10px; }
+    main { padding: 10px 12px 110px; }
+    .semana { grid-template-columns: 1fr; gap: 6px; }
+    .dia { min-height: 0; }
+    .dia.vazio-dia { flex-direction: row; align-items: center; }
+    .dia.vazio-dia > header { flex: 1; padding: 9px 10px; }
+    .dia.vazio-dia .livre { display: none; }
+    .dia.passado.vazio-dia { display: none; }
+    .cards { padding: 0 8px 9px; }
+    .card { padding: 10px 11px; }
+    .card .tit { font-size: 15px; }
+    .mais { width: 30px; height: 30px; }
+    .fab { display: grid; place-items: center; }
+    dialog { margin: auto auto 0; width: 100vw; max-width: 100vw; border-radius: 18px 18px 0 0; border-bottom: 0; max-height: 92dvh; }
+    .ficha { padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
+    .tres { grid-template-columns: 1fr 1fr; }
+    .tres .campo:first-child { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<dialog id="dlg"></dialog>
+<script src="config.js"></script>
+<script>
+(() => {
+  const CFG = window.AGENDA || {};
+  const SIMBOLO = '<svg viewBox="0 0 230.91 207.09" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M141.58 8.37C150.94 15.34 156.35 25.12 161.34 35.44C161.94 36.68 162.55 37.92 163.15 39.15C167.99 49.06 172.70 59.02 177.31 69.04C178.00 70.54 178.69 72.04 179.39 73.54C181.87 78.91 184.34 84.28 186.81 89.66C187.00 90.08 187.20 90.51 187.40 90.93C187.44 91.04 187.44 91.04 187.69 91.58C188.10 92.46 188.50 93.34 188.90 94.22C189.11 94.66 189.31 95.11 189.52 95.56C192.80 102.70 196.10 109.84 199.41 116.98C204.30 127.53 209.17 138.09 214.01 148.66C214.71 150.17 215.40 151.69 216.10 153.21C219.96 161.61 223.82 170.03 227.59 178.48C227.89 179.15 228.20 179.83 228.50 180.50C228.91 181.42 229.32 182.33 229.73 183.25C229.85 183.52 229.97 183.79 230.10 184.06C230.20 184.31 230.31 184.56 230.42 184.81C230.52 185.02 230.61 185.23 230.71 185.45C230.91 186.04 230.91 186.04 230.91 187.18C230.31 187.57 230.31 187.57 229.46 187.93C229.30 188.00 229.30 188.00 228.48 188.34C228.13 188.49 227.77 188.63 227.40 188.78C227.03 188.94 226.65 189.10 226.28 189.25C225.26 189.68 224.24 190.10 223.22 190.53C222.16 190.97 221.09 191.41 220.03 191.85C218.71 192.40 217.39 192.95 216.07 193.50C213.22 194.69 210.38 195.89 207.55 197.12C206.33 197.64 205.11 198.16 203.90 198.68C202.93 199.10 201.96 199.52 200.99 199.94C199.92 200.41 198.84 200.87 197.76 201.33C197.44 201.47 197.12 201.61 196.80 201.75C196.50 201.88 196.21 202.00 195.91 202.13C195.78 202.18 195.78 202.18 195.14 202.46C193.98 202.68 193.08 202.61 192.03 202.05C191.42 201.34 191.07 200.56 190.70 199.72C190.59 199.48 190.47 199.24 190.35 198.99C190.10 198.46 189.86 197.94 189.62 197.41C189.23 196.57 188.84 195.73 188.44 194.90C187.45 192.82 186.48 190.73 185.51 188.64C177.05 170.49 177.05 170.49 168.59 166.60C168.36 166.48 168.12 166.36 167.87 166.24C159.35 162.09 148.28 163.78 139.63 166.70C139.19 166.86 138.74 167.01 138.29 167.17C138.07 167.25 137.85 167.33 137.62 167.41C120.78 173.34 104.86 182.38 89.13 190.75C75.18 198.17 60.10 206.05 43.96 206.62C43.71 206.63 43.45 206.64 43.19 206.65C32.73 207.09 22.73 204.83 14.23 198.61C13.90 198.39 13.57 198.17 13.24 197.94C6.83 193.21 2.99 184.50 1.78 176.82C0.00 162.02 5.69 148.24 11.94 135.16C11.99 135.06 11.99 135.06 12.22 134.58C13.36 132.20 14.55 129.85 15.75 127.50C16.33 126.37 16.91 125.23 17.49 124.10C22.31 114.62 27.23 105.22 32.58 96.02C33.04 95.24 33.49 94.46 33.94 93.68C44.02 76.30 54.18 58.85 65.99 42.56C66.72 41.55 67.44 40.53 68.17 39.50C79.80 23.00 93.19 5.35 114.28 1.55C123.71 0.00 133.86 2.81 141.58 8.37M101.13 62.55C100.91 62.76 100.69 62.96 100.46 63.18C97.46 66.03 94.79 69.06 92.20 72.30C91.25 73.48 90.29 74.64 89.30 75.79C89.23 75.87 89.23 75.87 88.90 76.26C88.77 76.41 88.64 76.56 88.50 76.72C85.70 79.99 83.03 83.33 80.48 86.81C79.72 87.86 78.94 88.89 78.16 89.93C42.64 136.77 42.64 136.77 44.38 154.76C44.94 158.30 46.90 161.56 49.68 163.83C53.92 166.85 59.90 167.26 64.89 166.45C81.59 163.22 97.08 152.66 111.48 144.14C113.13 143.16 114.79 142.19 116.45 141.23C140.98 126.90 140.98 126.90 146.15 116.82C146.21 116.71 146.21 116.71 146.50 116.15C150.44 108.03 148.83 98.98 146.01 90.78C144.10 85.45 141.78 80.28 139.44 75.13C139.29 74.80 139.14 74.47 138.99 74.14C137.95 71.86 136.89 69.60 135.83 67.34C135.69 67.04 135.55 66.74 135.41 66.44C132.86 60.99 129.75 54.80 123.75 52.60C114.60 49.48 107.31 56.67 101.13 62.55"/></svg>';
+  const TIPOS = [["gravacao", "Gravação"], ["cliente", "Cliente"], ["reuniao", "Reunião"], ["prospect", "Prospect"], ["pagar", "Pagar"], ["outro", "Outro"]];
+  const ETAPAS = [["contato", "Contato"], ["analise", "Análise enviada"], ["reuniao", "Reunião"], ["proposta", "Proposta"], ["fechado", "Fechado"], ["perdido", "Perdido"]];
+  const DSEM = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+  const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const dt = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const soma = (s, n) => { const d = dt(s); d.setDate(d.getDate() + n); return iso(d); };
+  const segunda = (s) => soma(s, -((dt(s).getDay() + 6) % 7));
+  const diaTxt = (s) => `${DSEM[dt(s).getDay()]} ${s.slice(8)}/${s.slice(5, 7)}`;
+  const brl = (v) => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const min = (h) => (h ? Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5)) : null);
+
+  const st = { chave: null, eu: null, pessoas: [], hoje: iso(new Date()), semana: null, eventos: [], contas: [], prospects: [], aba: "agenda", carregando: false };
+  const guarda = { ler: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, por: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
+
+  async function rpc(fn, args) {
+    const r = await fetch(`${CFG.url}/rest/v1/rpc/${fn}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: CFG.anon, Authorization: `Bearer ${CFG.anon}` },
+      body: JSON.stringify({ p_chave: st.chave, ...args }),
+    });
+    const t = await r.text(); let j; try { j = JSON.parse(t); } catch { j = t; }
+    if (!r.ok) throw new Error((j && j.message) || `erro ${r.status}`);
+    return j;
+  }
+  const traduz = (m) => ({
+    "chave invalida": "Esse link não vale mais. Peça um novo ao Augusto.",
+    "sem permissao": "Você não pode mexer nesse compromisso.",
+    "sem permissao para esse tipo": "Esse tipo é só para os sócios.",
+    "falta o titulo": "Escreva o que é o compromisso.",
+    "falta o dia": "Escolha o dia.",
+    "hora de fim tem que ser depois do inicio": "A hora de fim tem que ser depois do início.",
+    "Failed to fetch": "Sem conexão. Tente de novo.",
+  }[m] || m);
+
+  let toastT;
+  function toast(msg) {
+    document.querySelectorAll(".toast").forEach((e) => e.remove());
+    const e = document.createElement("div"); e.className = "toast"; e.setAttribute("role", "status"); e.textContent = msg; document.body.append(e);
+    clearTimeout(toastT); toastT = setTimeout(() => e.remove(), 2600);
+  }
+
+  // ───────── entrada ─────────
+  function porta(msg) {
+    $("#app").innerHTML = `<div class="porta"><div>${SIMBOLO}
+      <h1 style="margin:0;font-size:22px;font-weight:800">Agenda da Anvil</h1>
+      <p>${esc(msg || "Abra pelo link que o Augusto te mandou. Se já tem a chave, cole aqui.")}</p>
+      <input id="p-chave" type="text" autocomplete="off" placeholder="link ou chave" aria-label="Link ou chave de acesso">
+      <button class="bt cheio" id="p-ok" style="height:42px;padding:0 22px">Entrar</button></div></div>`;
+    $("#p-ok").onclick = () => { const v = $("#p-chave").value.trim(); const k = (v.match(/k=([^&\s]+)/) || [])[1] || v; if (k) { st.chave = k; entrar(); } };
+    $("#p-chave").onkeydown = (e) => { if (e.key === "Enter") $("#p-ok").click(); };
+  }
+  async function entrar() {
+    if (!CFG.url) return porta("A agenda ainda está sendo ligada. Volte em alguns minutos.");
+    try {
+      const r = await rpc("agenda_entrar", {});
+      st.eu = r.eu; st.pessoas = r.pessoas; st.hoje = r.hoje || st.hoje; st.semana = segunda(st.hoje);
+      guarda.por("agenda.chave", st.chave);
+      casca(); await carregar();
+    } catch (e) {
+      if (/chave/.test(e.message)) { guarda.por("agenda.chave", null); porta(traduz("chave invalida")); }
+      else porta(traduz(e.message));
+    }
+  }
+
+  // ───────── dados ─────────
+  const socio = () => st.eu && st.eu.papel !== "equipe";
+  async function carregar(silencioso) {
+    if (st.carregando) return; st.carregando = true;
+    try {
+      const pedidos = [rpc("agenda_listar", { p_de: st.semana, p_ate: soma(st.semana, 6) })];
+      if (socio()) pedidos.push(rpc("agenda_contas", {}), rpc("agenda_prospects", {}));
+      const [ev, contas, prospects] = await Promise.all(pedidos);
+      st.eventos = ev; if (contas) st.contas = contas; if (prospects) st.prospects = prospects;
+      desenha();
+    } catch (e) { if (!silencioso) toast(traduz(e.message)); }
+    finally { st.carregando = false; }
+  }
+
+  // quem bate com quem, só para pintar (a regra que vale é a do banco)
+  function batidas(evs) {
+    const s = new Set();
+    const lista = evs.filter((e) => e.status === "marcado" && e.tipo !== "pagar" && e.hora_ini);
+    for (let i = 0; i < lista.length; i++) for (let j = i + 1; j < lista.length; j++) {
+      const a = lista[i], b = lista[j];
+      if (a.dia !== b.dia || !a.quem.some((q) => b.quem.includes(q))) continue;
+      const af = min(a.hora_fim) ?? min(a.hora_ini) + 60, bf = min(b.hora_fim) ?? min(b.hora_ini) + 60;
+      if (min(a.hora_ini) < bf && min(b.hora_ini) < af) { s.add(a.id); s.add(b.id); }
+    }
+    return s;
+  }
+  const pessoa = (id) => st.pessoas.find((p) => p.id === id) || { id, nome: id, cor: "#86A195" };
+  const bolinhas = (quem) => quem.length ? `<span class="quem">${quem.map((q) => { const p = pessoa(q); return `<b style="--c:${esc(p.cor || "#86A195")}" title="${esc(p.nome)}">${esc(p.nome[0])}</b>`; }).join("")}</span>` : "";
+
+  // ───────── casca ─────────
+  function casca() {
+    $("#app").innerHTML = `
+      ${CFG.ensaio ? '<div class="ensaio">ENSAIO · dados de teste, nada aqui é a agenda de verdade</div>' : ""}
+      <div class="topo"><div class="topo-in">
+        <div class="marca">${SIMBOLO}<b>Agenda</b></div>
+        <div class="abas" role="tablist" id="abas"></div>
+        <button class="eu" id="eu" title="${esc(st.eu.nome)}" aria-label="Você entrou como ${esc(st.eu.nome)}">${esc(st.eu.nome[0])}</button>
+        <div class="nav" id="nav"></div>
+        <div class="resumo" id="resumo" aria-live="polite"></div>
+      </div></div>
+      <main id="main"></main>
+      <button class="fab" id="fab" aria-label="Marcar compromisso">+</button>`;
+    $("#eu").onclick = () => { if (confirm(`Você entrou como ${st.eu.nome}. Sair deste aparelho?`)) { guarda.por("agenda.chave", null); location.reload(); } };
+    $("#fab").onclick = () => (st.aba === "prospects" ? fichaProspect() : ficha({ tipo: st.aba === "contas" ? "pagar" : "gravacao", dia: st.hoje }));
+  }
+
+  function desenha() {
+    const abertas = st.contas.length, vencidas = st.contas.filter((c) => c.dia < st.hoje).length;
+    const pAbertos = st.prospects.filter((p) => !["fechado", "perdido"].includes(p.etapa)).length;
+    $("#abas").innerHTML = [["agenda", "Agenda", ""], ...(socio() ? [["contas", "Contas", abertas || ""], ["prospects", "Prospects", pAbertos || ""]] : [])]
+      .map(([id, nome, n]) => `<button role="tab" data-aba="${id}" aria-selected="${st.aba === id}">${nome}${n !== "" ? `<span class="n">${n}</span>` : ""}</button>`).join("");
+    $("#abas").querySelectorAll("button").forEach((b) => (b.onclick = () => { st.aba = b.dataset.aba; desenha(); }));
+    $("#abas").hidden = !socio();
+
+    // resumo de hoje
+    const deHoje = st.eventos.filter((e) => e.dia === st.hoje && e.tipo !== "pagar" && e.status === "marcado");
+    const agora = new Date(); const agoraMin = agora.getHours() * 60 + agora.getMinutes();
+    const prox = deHoje.filter((e) => e.hora_ini && min(e.hora_ini) >= agoraMin)[0];
+    let r = st.semana === segunda(st.hoje)
+      ? `Hoje: <b>${deHoje.length === 0 ? "nada marcado" : deHoje.length === 1 ? "1 compromisso" : deHoje.length + " compromissos"}</b>${prox ? ` · próximo às <b>${prox.hora_ini}</b> ${esc(prox.titulo)}` : ""}`
+      : "";
+    if (socio() && vencidas) r += `${r ? " · " : ""}<span class="al">${vencidas} conta${vencidas > 1 ? "s" : ""} vencida${vencidas > 1 ? "s" : ""}</span>`;
+    $("#resumo").innerHTML = r;
+
+    if (st.aba === "agenda") desenhaSemana(); else if (st.aba === "contas") desenhaContas(); else desenhaProspects();
+  }
+
+  function desenhaSemana() {
+    const fim = soma(st.semana, 6), a = dt(st.semana), b = dt(fim);
+    const titulo = a.getMonth() === b.getMonth() ? `${a.getDate()} a ${b.getDate()} de ${MES[b.getMonth()]}` : `${a.getDate()} de ${MES[a.getMonth()]} a ${b.getDate()} de ${MES[b.getMonth()]}`;
+    const naSemana = st.semana === segunda(st.hoje);
+    $("#nav").innerHTML = `<h1>${titulo}<small>${b.getFullYear()}</small></h1>
+      <button class="bt seta" id="n-ant" aria-label="Semana anterior">‹</button>
+      <button class="bt" id="n-hoje" ${naSemana ? "disabled style='opacity:.45'" : ""}>Hoje</button>
+      <button class="bt seta" id="n-prox" aria-label="Próxima semana">›</button>
+      <button class="bt cheio" id="n-novo">+ Marcar</button>`;
+    $("#n-ant").onclick = () => { st.semana = soma(st.semana, -7); carregar(); };
+    $("#n-prox").onclick = () => { st.semana = soma(st.semana, 7); carregar(); };
+    $("#n-hoje").onclick = () => { st.semana = segunda(st.hoje); carregar(); };
+    $("#n-novo").onclick = () => ficha({ tipo: "gravacao", dia: st.semana <= st.hoje && st.hoje <= fim ? st.hoje : st.semana });
+
+    const bate = batidas(st.eventos);
+    let html = '<div class="semana">';
+    for (let i = 0; i < 7; i++) {
+      const d = soma(st.semana, i);
+      const evs = st.eventos.filter((e) => e.dia === d);
+      const comp = evs.filter((e) => e.tipo !== "pagar" && e.status === "marcado");
+      const temBate = comp.some((e) => bate.has(e.id));
+      const porPessoa = Math.max(0, ...st.pessoas.map((p) => comp.filter((e) => e.quem.includes(p.id)).length));
+      const cl = temBate ? "bate" : porPessoa >= 3 || comp.length >= 4 ? "cheio" : "";
+      const rot = temBate ? "bate" : comp.length ? `${comp.length}${cl === "cheio" ? " · cheio" : ""}` : "";
+      html += `<section class="dia ${d === st.hoje ? "hoje" : ""} ${d < st.hoje ? "passado" : ""} ${evs.length ? "" : "vazio-dia"}" aria-label="${diaTxt(d)}">
+        <header><span class="dsem">${DSEM[dt(d).getDay()]}</span><span class="dnum">${dt(d).getDate()}</span>
+          ${rot ? `<span class="carga ${cl}" title="${temBate ? "Tem compromisso batendo horário" : comp.length + " compromissos"}">${rot}</span>` : '<span class="carga"></span>'}
+          <button class="mais" data-dia="${d}" aria-label="Marcar em ${diaTxt(d)}">+</button></header>
+        ${evs.length ? `<div class="cards">${evs.map((e) => cartao(e, bate.has(e.id))).join("")}</div>` : '<div class="livre">livre</div>'}
+      </section>`;
+    }
+    $("#main").innerHTML = html + "</div>";
+    $("#main").querySelectorAll(".mais").forEach((b) => (b.onclick = () => ficha({ tipo: "gravacao", dia: b.dataset.dia })));
+    $("#main").querySelectorAll(".card").forEach((c) => (c.onclick = () => { const e = st.eventos.find((x) => x.id === c.dataset.id); if (e && e.pode_editar) ficha(e); else if (e) toast(e.oculto ? "Horário ocupado" : "Só quem marcou pode mexer"); }));
+  }
+
+  function cartao(e, bate) {
+    const hora = e.tipo === "pagar" ? "vence" : e.hora_ini ? `${e.hora_ini}${e.hora_fim ? `<i>às ${e.hora_fim}</i>` : ""}` : "sem hora";
+    const meta = [e.cliente, e.local, e.tipo === "pagar" && e.valor != null ? brl(e.valor) : null].filter(Boolean).map(esc).join(" · ");
+    return `<button class="card t-${e.tipo} ${e.status === "feito" ? "feito" : ""} ${bate ? "bate" : ""}" data-id="${e.id}">
+      <span class="l1">${hora}${bolinhas(e.quem)}</span>
+      <span class="tit">${esc(e.titulo)}</span>
+      ${meta ? `<span class="meta">${meta}</span>` : ""}
+      ${bate ? '<span class="av">bate com outro horário</span>' : ""}</button>`;
+  }
+
+  function desenhaContas() {
+    $("#nav").innerHTML = `<h1>Contas a pagar</h1><button class="bt cheio" id="n-novo">+ Conta</button>`;
+    $("#n-novo").onclick = () => ficha({ tipo: "pagar", dia: st.hoje });
+    const total = st.contas.reduce((s, c) => s + Number(c.valor || 0), 0);
+    const grupo = (tit, l) => l.length ? `<h2>${tit}</h2>` + l.map((c) => `<button class="linha" data-id="${c.id}">
+        <span class="t">${esc(c.titulo)}</span><span class="v">${c.valor != null ? brl(c.valor) : ""}</span>
+        <span class="s">${esc([c.cliente, c.obs, c.origem === "email" ? "veio do e-mail" : null].filter(Boolean).join(" · "))}</span>
+        <span class="d ${c.dia < st.hoje ? "venc" : ""}">${c.dia < st.hoje ? "venceu " : c.dia === st.hoje ? "hoje · " : ""}${diaTxt(c.dia)}</span></button>`).join("") : "";
+    const venc = st.contas.filter((c) => c.dia < st.hoje), sem = st.contas.filter((c) => c.dia >= st.hoje && c.dia <= soma(st.hoje, 7)), dep = st.contas.filter((c) => c.dia > soma(st.hoje, 7));
+    $("#main").innerHTML = st.contas.length
+      ? `<div class="cab-lista"><p>${st.contas.length} em aberto${total ? " · " + brl(total) : ""}. Toque na conta para dar baixa.</p></div><div class="lista">${grupo("Vencidas", venc)}${grupo("Próximos 7 dias", sem)}${grupo("Depois", dep)}</div>`
+      : '<p class="vazio">Nenhuma conta em aberto. As que chegarem por e-mail aparecem aqui sozinhas.</p>';
+    $("#main").querySelectorAll(".linha").forEach((l) => (l.onclick = () => ficha(st.contas.find((c) => c.id === l.dataset.id))));
+  }
+
+  function desenhaProspects() {
+    $("#nav").innerHTML = `<h1>Prospects</h1><button class="bt cheio" id="n-novo">+ Prospect</button>`;
+    $("#n-novo").onclick = () => fichaProspect();
+    const item = (p) => `<button class="linha" data-id="${p.id}"><span class="t">${esc(p.nome)}</span>
+      <span class="d ${p.proximo_dia && p.proximo_dia < st.hoje ? "venc" : ""}">${p.proximo_dia ? diaTxt(p.proximo_dia) : ""}</span>
+      <span class="s">${esc([p.contato, p.proximo_passo].filter(Boolean).join(" · ") || "sem próximo passo")}</span></button>`;
+    let html = "";
+    for (const [id, nome] of ETAPAS) { const l = st.prospects.filter((p) => p.etapa === id); if (l.length) html += `<h2>${nome} · ${l.length}</h2>` + l.map(item).join(""); }
+    $("#main").innerHTML = html ? `<div class="lista">${html}</div>` : '<p class="vazio">Nenhum prospect ainda. Use o botão acima para anotar quem está em conversa.</p>';
+    $("#main").querySelectorAll(".linha").forEach((l) => (l.onclick = () => fichaProspect(st.prospects.find((p) => p.id === l.dataset.id))));
+  }
+
+  // ───────── ficha do compromisso ─────────
+  const dlg = $("#dlg");
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  function ficha(ev) {
+    const novo = !ev.id;
+    const e = { titulo: "", tipo: "gravacao", dia: st.hoje, hora_ini: "", hora_fim: "", quem: novo && ev.tipo !== "pagar" ? [st.eu.id].filter((q) => st.pessoas.some((p) => p.id === q)) : [], cliente: "", local: "", obs: "", valor: "", ...ev };
+    const tipos = TIPOS.filter(([id]) => socio() || !["pagar", "prospect"].includes(id));
+    dlg.innerHTML = `<form class="ficha" id="ficha" novalidate>
+      <h2>${novo ? "Marcar" : "Compromisso"}<button type="button" id="f-x" aria-label="Fechar">×</button></h2>
+      <label class="campo"><span>O que é</span><input id="f-titulo" type="text" maxlength="140" autocomplete="off" placeholder="Ex.: Gravação Evolution" value="${esc(e.titulo)}"></label>
+      <fieldset class="campo"><legend>Tipo</legend><div class="chips">${tipos.map(([id, nome]) => `<label><input type="radio" name="tipo" value="${id}" ${e.tipo === id ? "checked" : ""}><span style="--c:var(--t-${id})">${nome}</span></label>`).join("")}</div></fieldset>
+      <div class="tres">
+        <label class="campo"><span id="f-dia-r">Dia</span><input id="f-dia" type="date" value="${esc(e.dia)}"></label>
+        <label class="campo" data-hora><span>Começa</span><input id="f-ini" type="time" step="300" value="${esc(e.hora_ini || "")}"></label>
+        <label class="campo" data-hora><span>Termina</span><input id="f-fim" type="time" step="300" value="${esc(e.hora_fim || "")}"></label>
+      </div>
+      <div class="atalhos"><button type="button" data-d="0">hoje</button><button type="button" data-d="1">amanhã</button><button type="button" data-d="7">+1 semana</button></div>
+      <fieldset class="campo" data-quem><legend>Quem vai</legend><div class="chips">${st.pessoas.map((p) => `<label><input type="checkbox" name="quem" value="${esc(p.id)}" ${e.quem.includes(p.id) ? "checked" : ""}><span style="--c:${esc(p.cor || "#86A195")}">${esc(p.nome)}</span></label>`).join("")}</div></fieldset>
+      <label class="campo" data-valor><span>Valor (R$)</span><input id="f-valor" type="number" step="0.01" min="0" inputmode="decimal" value="${esc(e.valor ?? "")}"></label>
+      <div class="duas">
+        <label class="campo"><span>Cliente</span><input id="f-cliente" type="text" maxlength="80" list="f-clientes" autocomplete="off" value="${esc(e.cliente || "")}"></label>
+        <label class="campo" data-local><span>Onde</span><input id="f-local" type="text" maxlength="120" autocomplete="off" value="${esc(e.local || "")}"></label>
+      </div>
+      <datalist id="f-clientes">${[...new Set(st.eventos.map((x) => x.cliente).filter(Boolean))].map((c) => `<option value="${esc(c)}">`).join("")}</datalist>
+      <label class="campo"><span>Observação</span><textarea id="f-obs" rows="2" maxlength="500">${esc(e.obs || "")}</textarea></label>
+      <div id="f-aviso" aria-live="polite"></div>
+      <div class="erro" id="f-erro" role="alert"></div>
+      <div class="acoes">
+        <button class="bt cheio" id="f-salvar" type="submit">${novo ? "Marcar" : "Salvar"}</button>
+        ${novo ? "" : `<button class="bt" type="button" id="f-feito">${e.tipo === "pagar" ? "Pago" : e.status === "feito" ? "Reabrir" : "Feito"}</button>
+        <button class="bt perigo dir" type="button" id="f-cancelar">Desmarcar</button>`}
+      </div></form>`;
+    const F = (id) => $(id, dlg);
+    const lido = () => ({
+      id: e.id || null, titulo: F("#f-titulo").value, tipo: (dlg.querySelector("input[name=tipo]:checked") || {}).value || "outro",
+      dia: F("#f-dia").value, hora_ini: F("#f-ini").value, hora_fim: F("#f-fim").value,
+      quem: [...dlg.querySelectorAll("input[name=quem]:checked")].map((c) => c.value),
+      cliente: F("#f-cliente").value, local: F("#f-local").value, obs: F("#f-obs").value, valor: F("#f-valor").value,
+    });
+    let forcar = false, seq = 0, tConf;
+    function modo() {
+      const pagar = lido().tipo === "pagar";
+      dlg.querySelectorAll("[data-hora],[data-quem],[data-local]").forEach((x) => (x.hidden = pagar));
+      F("[data-valor]").hidden = !pagar; F("#f-dia-r").textContent = pagar ? "Vence em" : "Dia";
+    }
+    async function conferir() {
+      const v = lido(); const meu = ++seq; forcar = false; F("#f-salvar").textContent = novo ? "Marcar" : "Salvar"; F("#f-erro").textContent = "";
+      if (v.tipo === "pagar" || !v.dia) return (F("#f-aviso").innerHTML = "");
+      try { const r = await rpc("agenda_conferir", { p_evento: { ...v, hora_ini: v.tipo === "pagar" ? "" : v.hora_ini } }); if (meu === seq) mostraAviso(r); } catch {}
+    }
+    function mostraAviso(r) {
+      let h = "";
+      if (r.conflitos && r.conflitos.length) {
+        h += `<div class="aviso bate"><b>Bate com outro compromisso</b>${r.conflitos.map((c) => `<span class="m">${c.hora_ini}${c.hora_fim ? " às " + c.hora_fim : ""} · ${esc(c.titulo)} · ${esc(c.em_comum)}</span>`).join("")}</div>`;
+        forcar = true; F("#f-salvar").textContent = "Marcar mesmo assim";
+      }
+      const cheios = (r.carga || []).filter((c) => c.total >= 3);
+      if (cheios.length) h += `<div class="aviso cheio">${cheios.map((c) => `${esc(c.nome)} já tem ${c.total} compromissos nesse dia`).join(" · ")}</div>`;
+      F("#f-aviso").innerHTML = h;
+    }
+    const agenda = () => { clearTimeout(tConf); tConf = setTimeout(conferir, 220); };
+    dlg.querySelectorAll("#f-dia,#f-ini,#f-fim,input[name=quem],input[name=tipo]").forEach((x) => x.addEventListener("change", () => { modo(); agenda(); }));
+    F("#f-ini").addEventListener("change", () => { const i = F("#f-ini").value, f = F("#f-fim").value; if (i && f && f <= i) F("#f-fim").value = ""; });
+    dlg.querySelectorAll(".atalhos button").forEach((b) => (b.onclick = () => { F("#f-dia").value = soma(st.hoje, Number(b.dataset.d)); agenda(); }));
+    F("#f-x").onclick = () => dlg.close();
+    F("#ficha").onsubmit = async (evt) => {
+      evt.preventDefault(); const v = lido(); const bt = F("#f-salvar");
+      if (!v.titulo.trim()) { F("#f-erro").textContent = traduz("falta o titulo"); return F("#f-titulo").focus(); }
+      if (v.tipo === "pagar") { v.hora_ini = ""; v.hora_fim = ""; v.quem = []; v.local = ""; } else v.valor = "";
+      bt.disabled = true;
+      try {
+        const r = await rpc("agenda_salvar", { p_evento: v, p_forcar: forcar });
+        if (r.ok === false) { mostraAviso(r); bt.disabled = false; return; }
+        dlg.close(); toast(novo ? "Marcado" : "Salvo");
+        if (v.dia < st.semana || v.dia > soma(st.semana, 6)) { st.semana = segunda(v.dia); if (v.tipo !== "pagar") st.aba = "agenda"; }
+        await carregar();
+      } catch (er) { F("#f-erro").textContent = traduz(er.message); bt.disabled = false; }
+    };
+    if (!novo) {
+      F("#f-feito").onclick = async () => { try { await rpc("agenda_status", { p_id: e.id, p_status: e.status === "feito" ? "marcado" : "feito" }); dlg.close(); toast(e.tipo === "pagar" ? "Conta paga" : e.status === "feito" ? "Reaberto" : "Feito"); await carregar(); } catch (er) { F("#f-erro").textContent = traduz(er.message); } };
+      F("#f-cancelar").onclick = async () => { if (!confirm(`Desmarcar "${e.titulo}"?`)) return; try { await rpc("agenda_status", { p_id: e.id, p_status: "cancelado" }); dlg.close(); toast("Desmarcado"); await carregar(); } catch (er) { F("#f-erro").textContent = traduz(er.message); } };
+    }
+    modo(); dlg.showModal(); if (novo) F("#f-titulo").focus(); conferir();
+  }
+
+  // ───────── ficha do prospect ─────────
+  function fichaProspect(pr) {
+    const p = { nome: "", contato: "", etapa: "contato", proximo_passo: "", proximo_dia: "", obs: "", ...(pr || {}) };
+    dlg.innerHTML = `<form class="ficha" id="ficha" novalidate>
+      <h2>${p.id ? "Prospect" : "Novo prospect"}<button type="button" id="f-x" aria-label="Fechar">×</button></h2>
+      <div class="duas">
+        <label class="campo"><span>Empresa</span><input id="p-nome" type="text" maxlength="120" autocomplete="off" value="${esc(p.nome)}"></label>
+        <label class="campo"><span>Pessoa</span><input id="p-contato" type="text" maxlength="80" autocomplete="off" value="${esc(p.contato || "")}"></label>
+      </div>
+      <fieldset class="campo"><legend>Etapa</legend><div class="chips">${ETAPAS.map(([id, nome]) => `<label><input type="radio" name="etapa" value="${id}" ${p.etapa === id ? "checked" : ""}><span>${nome}</span></label>`).join("")}</div></fieldset>
+      <div class="duas">
+        <label class="campo"><span>Próximo passo</span><input id="p-passo" type="text" maxlength="160" autocomplete="off" value="${esc(p.proximo_passo || "")}"></label>
+        <label class="campo"><span>Até quando</span><input id="p-dia" type="date" value="${esc(p.proximo_dia || "")}"></label>
+      </div>
+      <label class="campo"><span>Observação</span><textarea id="p-obs" rows="2" maxlength="600">${esc(p.obs || "")}</textarea></label>
+      <div class="erro" id="f-erro" role="alert"></div>
+      <div class="acoes"><button class="bt cheio" id="f-salvar" type="submit">Salvar</button></div></form>`;
+    $("#f-x", dlg).onclick = () => dlg.close();
+    $("#ficha", dlg).onsubmit = async (evt) => {
+      evt.preventDefault();
+      const v = { id: p.id || null, nome: $("#p-nome", dlg).value, contato: $("#p-contato", dlg).value, etapa: (dlg.querySelector("input[name=etapa]:checked") || {}).value,
+        proximo_passo: $("#p-passo", dlg).value, proximo_dia: $("#p-dia", dlg).value, obs: $("#p-obs", dlg).value };
+      if (!v.nome.trim()) { $("#f-erro", dlg).textContent = "Escreva o nome da empresa."; return $("#p-nome", dlg).focus(); }
+      try { await rpc("agenda_prospect_salvar", { p_prospect: v }); dlg.close(); toast("Salvo"); await carregar(); }
+      catch (er) { $("#f-erro", dlg).textContent = traduz(er.message); }
+    };
+    dlg.showModal(); if (!p.id) $("#p-nome", dlg).focus();
+  }
+
+  // ───────── partida ─────────
+  const noLink = (location.hash.match(/k=([^&]+)/) || [])[1];
+  if (noLink) { st.chave = decodeURIComponent(noLink); history.replaceState(null, "", location.pathname + location.search); }
+  else st.chave = guarda.ler("agenda.chave");
+  if (st.chave) entrar(); else porta();
+  // mantém em dia sem ninguém apertar nada
+  setInterval(() => { if (st.eu && !dlg.open && !document.hidden) carregar(true); }, 60000);
+  document.addEventListener("visibilitychange", () => { if (st.eu && !dlg.open && !document.hidden) carregar(true); });
+})();
+</script>
+</body>
+</html>
