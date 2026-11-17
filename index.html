@@ -17,196 +17,477 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* Agenda da Anvil · identidade 7.0: preto, verde, floresta, sálvia, branco suave. Tema escuro. */
   :root {
-    --preto: #050D09; --fundo2: #0A1510; --cartao: #0E1B15; --cartao2: #13241C; --floresta: #103C2D;
-    --verde: #00EC86; --salvia: #86A195; --branco: #F4F6F0; --linha: rgba(134, 161, 149, .18); --linha2: rgba(134, 161, 149, .32);
+    --preto: #050D09; --s1: #0B1611; --s2: #112019; --s3: #182B22; --floresta: #103C2D; --floresta2: #154A38;
+    --verde: #00EC86; --salvia: #86A195; --salvia2: #AFC1B7; --branco: #F4F6F0; --apagado: #4C5E55;
     --alerta: #FF6B5E; --ambar: #FFC46B;
     --t-gravacao: #00EC86; --t-cliente: #7CC4FF; --t-reuniao: #C8B6FF; --t-prospect: #FFD27A; --t-pagar: #FF9F6B; --t-outro: #86A195;
+    --sans: Manrope, system-ui, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+    color-scheme: dark;
   }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   html, body { margin: 0; background: var(--preto); color: var(--branco); }
-  body { font: 500 15px/1.4 Manrope, system-ui, "Segoe UI", sans-serif; min-height: 100dvh; -webkit-font-smoothing: antialiased; }
+  body { font: 500 16px/1.45 var(--sans); min-height: 100dvh; -webkit-font-smoothing: antialiased; }
   button, input, textarea, select { font: inherit; color: inherit; }
   button { cursor: pointer; border: 0; background: none; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :focus-visible { outline: 2px solid var(--verde); outline-offset: 2px; border-radius: 6px; }
+  button:disabled { cursor: default; }
+  :focus-visible { outline: 2px solid var(--verde); outline-offset: 2px; }
   [hidden] { display: none !important; }
+  .t-gravacao { --tc: var(--t-gravacao); } .t-cliente { --tc: var(--t-cliente); } .t-reuniao { --tc: var(--t-reuniao); }
+  .t-prospect { --tc: var(--t-prospect); } .t-pagar { --tc: var(--t-pagar); } .t-outro { --tc: var(--t-outro); }
+
+  /* botões */
+  .bt { min-height: 44px; padding: 0 18px; border-radius: 12px; background: var(--s2); font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background-color .15s; }
+  .bt:hover { background: var(--s3); }
+  .bt.cheio { background: var(--verde); color: var(--preto); }
+  .bt.cheio:hover { background: #45F2A6; }
+  .bt.perigo { color: #FF8F84; }
+  .bt.alerta { background: var(--alerta); color: var(--preto); }
+  .bt.alerta:hover { background: #FF8A80; }
+  .bt:disabled { opacity: .5; }
 
   /* topo */
-  .topo { position: sticky; top: 0; z-index: 5; background: rgba(5, 13, 9, .94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--linha); }
-  .topo-in { max-width: 1500px; margin: 0 auto; padding: 12px 16px 10px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px 16px; align-items: center; }
-  .marca { display: flex; align-items: center; gap: 9px; }
-  .marca svg { height: 22px; width: auto; color: var(--verde); display: block; }
-  .marca b { font: 500 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--salvia); padding-top: 2px; }
-  .abas { display: flex; gap: 2px; justify-self: center; background: var(--fundo2); border: 1px solid var(--linha); border-radius: 999px; padding: 3px; }
-  .abas button { padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; color: var(--salvia); }
-  .abas button[aria-selected="true"] { background: var(--branco); color: var(--preto); }
-  .abas .n { font: 500 11px var(--mono); margin-left: 5px; opacity: .8; }
-  .eu { width: 32px; height: 32px; border-radius: 50%; background: var(--cartao2); border: 1px solid var(--linha2); font-weight: 800; font-size: 13px; }
-  .nav { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; }
-  .nav h1 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin: 0 auto 0 0; }
-  .nav h1 small { font: 500 12px var(--mono); color: var(--salvia); margin-left: 8px; letter-spacing: 0; }
-  .bt { height: 34px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--linha2); font-weight: 700; font-size: 13px; background: var(--fundo2); }
-  .bt:hover { border-color: var(--salvia); }
-  .bt.seta { width: 34px; padding: 0; font-size: 17px; line-height: 1; }
-  .bt.cheio { background: var(--verde); color: var(--preto); border-color: var(--verde); }
-  .bt.perigo { color: var(--alerta); border-color: rgba(255, 107, 94, .45); }
-  .resumo { grid-column: 1 / -1; font-size: 13px; color: var(--salvia); min-height: 18px; }
-  .resumo b { color: var(--branco); font-weight: 700; }
-  .resumo .al { color: var(--alerta); font-weight: 700; }
+  .ensaio { background: var(--ambar); color: var(--preto); font-size: 12px; font-weight: 700; text-align: center; padding: 3px 12px; }
+  .topo { position: sticky; top: 0; z-index: 5; background: var(--preto); }
+  .topo-in { max-width: 1480px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+  .marca { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
+  .marca svg { height: 24px; width: auto; color: var(--verde); display: block; flex: none; }
+  .marca span { font-weight: 800; font-size: 17px; letter-spacing: -.01em; }
+  .abas { display: flex; gap: 2px; }
+  .abas button { height: 40px; padding: 0 14px; border-radius: 12px; font-weight: 700; font-size: 15px; color: var(--salvia); display: inline-flex; align-items: center; gap: 7px; transition: color .15s, background-color .15s; }
+  .abas button:hover { color: var(--branco); }
+  .abas button[aria-selected="true"] { background: var(--s2); color: var(--branco); }
+  .abas .n { font: 500 13px var(--mono); color: var(--salvia); }
+  .abas .n.al { color: var(--alerta); }
+  .eu { width: 40px; height: 40px; border-radius: 50%; background: var(--s2); font-weight: 800; font-size: 15px; flex: none; }
+  .eu:hover { background: var(--s3); }
 
-  main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 96px; }
+  /* agenda: mês + dia */
+  .v-agenda { max-width: 1480px; margin: 0 auto; padding: 4px 20px 24px; }
+  .mes-cab { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .mes-cab h1 { margin: 0 auto 0 0; font-size: 28px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+  .mes-cab h1 span { color: var(--salvia); font-weight: 600; letter-spacing: -.01em; }
+  .nav-bt { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--s1); transition: background-color .15s; }
+  .nav-hoje { height: 44px; padding: 0 16px; border-radius: 12px; background: var(--s1); font-weight: 700; font-size: 15px; transition: background-color .15s; }
+  .nav-bt:hover, .nav-hoje:hover:not(:disabled) { background: var(--s2); }
+  .nav-hoje:disabled { color: var(--apagado); }
+  .dsem { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 6px; }
+  .dsem span { font-size: 13px; font-weight: 700; color: var(--salvia); padding-left: 10px; }
 
-  /* semana */
-  .semana { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: start; }
-  .dia { background: var(--fundo2); border: 1px solid var(--linha); border-radius: 14px; min-height: 180px; display: flex; flex-direction: column; }
-  .dia.hoje { border-color: var(--verde); }
-  .dia.passado { opacity: .55; }
-  .dia > header { display: flex; align-items: baseline; gap: 6px; padding: 10px 8px 8px 10px; min-width: 0; }
-  .dsem { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--salvia); }
-  .dnum { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
-  .dia.hoje .dnum { color: var(--verde); }
-  .carga { margin-left: auto; font: 500 11px var(--mono); color: var(--salvia); padding: 2px 7px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .carga.cheio { color: var(--ambar); border-color: rgba(255, 196, 107, .4); }
-  .carga.bate { color: var(--alerta); border-color: rgba(255, 107, 94, .5); }
-  .mais { width: 24px; height: 24px; border-radius: 7px; border: 1px solid var(--linha2); color: var(--salvia); font-size: 16px; line-height: 1; flex: none; align-self: center; }
-  .mais:hover { color: var(--preto); background: var(--verde); border-color: var(--verde); }
-  .cards { display: flex; flex-direction: column; gap: 6px; padding: 0 6px 8px; }
-  .livre { font-size: 12px; color: rgba(134, 161, 149, .6); padding: 2px 6px 10px; }
+  .grade { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .cel { position: relative; text-align: left; background: var(--s1); border-radius: 12px; padding: 4px 4px 5px; display: flex; flex-direction: column; gap: 3px; min-width: 0; overflow: hidden; transition: background-color .15s; }
+  .cel:hover { background: var(--s2); }
+  .cel.fora { background: transparent; }
+  .cel.fora:hover { background: var(--s1); }
+  .cel.sel, .cel.sel:hover { background: var(--floresta); }
+  .cel-topo { display: flex; align-items: center; gap: 5px; height: 24px; flex: none; }
+  .num { min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px; display: grid; place-items: center; font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .cel.passado .num { color: var(--salvia); font-weight: 600; }
+  .cel.fora .num { color: var(--apagado); font-weight: 600; }
+  .cel.hoje .num { background: var(--verde); color: var(--preto); font-weight: 800; }
+  .flag { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; line-height: 1; color: var(--preto); flex: none; }
+  .flag.bate { background: var(--alerta); }
+  .flag.cheio { background: var(--ambar); }
+  .mais-n { margin-left: auto; font: 500 12px var(--mono); color: var(--salvia2); padding-right: 3px; }
+  .evs { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .chip[hidden] { display: none; }
+  .chip { display: flex; align-items: baseline; gap: 5px; height: 18px; line-height: 18px; padding: 0 6px; border-radius: 6px; background: rgba(134, 161, 149, .14); background: color-mix(in srgb, var(--tc) 15%, transparent); font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; min-width: 0; }
+  .chip i { font: 500 12px var(--mono); font-style: normal; color: var(--tc); flex: none; }
+  .chip span { overflow: hidden; text-overflow: ellipsis; }
+  .chip.feito { opacity: .45; }
+  .chip.bate i { color: var(--alerta); }
+  .cel.passado .evs, .cel.fora .evs { opacity: .6; }
+  .pontos { display: none; }
 
-  .card { text-align: left; width: 100%; background: var(--cartao); border: 1px solid var(--linha); border-left: 3px solid var(--tc, var(--salvia)); border-radius: 10px; padding: 8px 9px; display: grid; gap: 3px; }
-  .card:hover { background: var(--cartao2); }
-  .card.t-gravacao { --tc: var(--t-gravacao); } .card.t-cliente { --tc: var(--t-cliente); } .card.t-reuniao { --tc: var(--t-reuniao); }
-  .card.t-prospect { --tc: var(--t-prospect); } .card.t-pagar { --tc: var(--t-pagar); } .card.t-outro { --tc: var(--t-outro); }
-  .card .l1 { display: flex; align-items: center; gap: 6px; font: 500 11.5px var(--mono); color: var(--tc); }
-  .card .l1 i { font-style: normal; color: var(--salvia); }
-  .card .tit { font-weight: 700; font-size: 13.5px; line-height: 1.25; overflow-wrap: anywhere; }
-  .card .meta { font-size: 12px; color: var(--salvia); overflow-wrap: anywhere; }
-  .card.feito { opacity: .5; } .card.feito .tit { text-decoration: line-through; }
-  .card.bate { border-color: rgba(255, 107, 94, .6); border-left-color: var(--alerta); }
-  .card .av { color: var(--alerta); font: 500 11px var(--mono); }
-  .quem { display: flex; gap: 3px; margin-left: auto; }
-  .quem b { width: 18px; height: 18px; border-radius: 50%; background: var(--c, var(--salvia)); color: var(--preto); font: 800 10px Manrope, sans-serif; display: grid; place-items: center; }
+  /* painel do dia */
+  .painel { background: var(--s1); border-radius: 20px; padding: 20px; min-width: 0; }
+  .dia-cab { margin-bottom: 16px; }
+  .dia-cab .ds { margin: 0 0 2px; font-size: 14px; font-weight: 700; color: var(--salvia); }
+  .dia-cab .ds b { color: var(--verde); font-weight: 800; }
+  .dia-cab h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.025em; line-height: 1.15; }
+  .dia-res { margin: 6px 0 0; font-size: 15px; color: var(--salvia2); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .dia-res .m { font-family: var(--mono); font-size: 14px; color: var(--branco); }
+  .tag { font-size: 13px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+  .tag.bate { color: var(--alerta); background: rgba(255, 107, 94, .13); }
+  .tag.cheio { color: var(--ambar); background: rgba(255, 196, 107, .12); }
 
-  /* listas (contas e prospects) */
-  .lista { max-width: 760px; display: grid; gap: 8px; }
-  .lista h2 { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--salvia); margin: 14px 2px 2px; }
-  .linha { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; background: var(--fundo2); border: 1px solid var(--linha); border-radius: 12px; padding: 11px 13px; text-align: left; width: 100%; }
-  .linha:hover { background: var(--cartao); }
-  .linha .t { font-weight: 700; overflow-wrap: anywhere; }
-  .linha .s { font-size: 12.5px; color: var(--salvia); grid-column: 1; overflow-wrap: anywhere; }
-  .linha .d { font: 500 12px var(--mono); color: var(--salvia); text-align: right; white-space: nowrap; }
-  .linha .d.venc { color: var(--alerta); }
-  .linha .v { font-weight: 800; text-align: right; white-space: nowrap; }
-  .vazio { color: var(--salvia); padding: 28px 4px; }
-  .cab-lista { display: flex; align-items: center; gap: 10px; max-width: 760px; margin-bottom: 6px; }
-  .cab-lista p { margin: 0 auto 0 0; color: var(--salvia); font-size: 13px; }
+  .m-campo { display: flex; align-items: center; gap: 10px; background: var(--s2); border-radius: 14px; padding: 6px 6px 6px 10px; min-height: 56px; transition: box-shadow .15s; }
+  .m-campo:focus-within { box-shadow: 0 0 0 2px rgba(0, 236, 134, .6); }
+  .m-mais { width: 30px; height: 30px; border-radius: 9px; background: var(--verde); color: var(--preto); display: grid; place-items: center; flex: none; }
+  .m-campo input { flex: 1; min-width: 0; height: 44px; background: none; border: 0; outline: none; font-size: 16px; font-weight: 600; }
+  .m-campo input::placeholder { color: var(--salvia); font-weight: 500; opacity: 1; }
+  .m-ok { height: 44px; padding: 0 16px; border-radius: 10px; background: var(--verde); color: var(--preto); font-weight: 800; font-size: 15px; flex: none; }
+  .m-previa { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 4px 2px 0 4px; font-size: 15px; color: var(--salvia2); }
+  .pv { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+  .pv .m { font-family: var(--mono); font-size: 14px; color: var(--branco); }
+  .pv-cor { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); flex: none; }
+  .pv .dica { color: var(--salvia); font-size: 14px; }
+  .m-det { color: var(--salvia2); font-size: 14px; font-weight: 700; text-decoration: underline; text-decoration-color: rgba(175, 193, 183, .45); text-underline-offset: 4px; min-height: 36px; padding: 0 4px; flex: none; }
+  .m-det:hover { color: var(--branco); }
+  .aviso-bate { margin-top: 8px; background: var(--s2); border-radius: 14px; padding: 14px 16px 16px; display: grid; gap: 4px; }
+  .aviso-bate b { color: var(--alerta); font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .aviso-bate b::before { content: "!"; width: 18px; height: 18px; border-radius: 50%; background: var(--alerta); color: var(--preto); font-size: 12px; display: grid; place-items: center; }
+  .aviso-bate p { margin: 0; font-size: 15px; }
+  .aviso-bate p .m { font-family: var(--mono); font-size: 14px; }
+  .aviso-bate .bt { justify-self: start; margin-top: 8px; }
+  .aviso-cheio { margin: 8px 0 0 4px; color: var(--ambar); font-size: 14px; font-weight: 600; }
+  .erro { color: #FF8F84; font-size: 15px; margin: 8px 0 0 4px; }
+  .erro:empty { display: none; }
 
-  /* botão flutuante (celular) */
-  .fab { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); width: 58px; height: 58px; border-radius: 50%; background: var(--verde); color: var(--preto); font-size: 30px; font-weight: 500; line-height: 1; z-index: 6; display: none; }
+  /* itens do dia (e das contas) */
+  .itens { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 2px; }
+  .itens:empty { display: none; }
+  .item { border-radius: 14px; transition: background-color .15s; --anel: var(--s1); }
+  .item:hover, .item.aberto { background: var(--s2); --anel: var(--s2); }
+  .it-linha { width: 100%; text-align: left; display: grid; grid-template-columns: 50px 4px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 12px 12px 12px 10px; min-height: 60px; border-radius: 14px; }
+  .it-hora { display: grid; font-family: var(--mono); line-height: 1.35; padding-top: 1px; }
+  .it-hora b { font-weight: 500; font-size: 15px; }
+  .it-hora i { font-style: normal; font-size: 13px; color: var(--salvia); }
+  .it-hora .sh { font: 700 13px var(--sans); color: var(--salvia); }
+  .it-hora .venc { color: var(--alerta); }
+  .it-cor { align-self: stretch; border-radius: 2px; background: var(--tc); min-height: 22px; }
+  .it-txt { display: grid; gap: 2px; min-width: 0; }
+  .it-tit { font-weight: 700; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
+  .it-sub { font-size: 14px; color: var(--salvia); overflow-wrap: anywhere; }
+  .it-bate { font-size: 14px; font-weight: 700; color: var(--alerta); overflow-wrap: anywhere; }
+  .it-valor { font: 500 15px var(--mono); white-space: nowrap; padding-top: 1px; }
+  .item.feito .it-tit { text-decoration: line-through; text-decoration-color: var(--salvia); color: var(--salvia2); }
+  .item.feito .it-cor { opacity: .4; }
+  .item.oculto .it-tit { color: var(--salvia2); font-weight: 600; }
+  .quem { display: flex; padding-left: 6px; padding-top: 1px; }
+  .quem b { width: 26px; height: 26px; border-radius: 50%; background: var(--c, var(--salvia)); color: var(--preto); font-size: 12px; font-weight: 800; display: grid; place-items: center; margin-left: -6px; box-shadow: 0 0 0 2px var(--anel); }
+  .it-mais { padding: 0 12px 14px 76px; display: grid; gap: 12px; }
+  .it-det { margin: 0; font-size: 14px; color: var(--salvia2); display: grid; gap: 2px; }
+  .it-acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .item.novo { animation: brilho 1.6s ease-out; }
+  @keyframes brilho { from { background: var(--floresta2); } to { background: transparent; } }
+
+  /* contas e prospects */
+  .lista-v { max-width: 760px; margin: 0 auto; padding: 8px 20px 60px; }
+  .lista-cab { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 6px; }
+  .lista-cab h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+  .lista-cab p { margin: 6px 0 0; font-size: 15px; color: var(--salvia2); }
+  .lista-cab p .al { color: var(--alerta); font-weight: 700; }
+  .lista-cab .bt { margin-left: auto; flex: none; }
+  .grupo { margin: 26px 0 0 12px; font-size: 14px; font-weight: 700; color: var(--salvia); }
+  .lista-v .itens { margin-top: 6px; }
+  .lista-v .item { --anel: var(--preto); }
+  .lista-v .item:hover, .lista-v .item.aberto { background: var(--s1); }
+  .it-linha.pr { grid-template-columns: minmax(0, 1fr) auto; padding-left: 14px; }
+  .it-data { font: 500 14px var(--mono); color: var(--salvia2); white-space: nowrap; padding-top: 2px; }
+  .it-data.venc { color: var(--alerta); }
+  .vazio { color: var(--salvia2); padding: 28px 12px; font-size: 16px; }
 
   /* ficha */
-  dialog { border: 1px solid var(--linha2); background: var(--fundo2); color: var(--branco); border-radius: 18px; padding: 0; width: min(520px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); }
-  dialog::backdrop { background: rgba(0, 0, 0, .62); }
-  .ficha { padding: 18px 18px 16px; display: grid; gap: 13px; }
-  .ficha h2 { margin: 0; font-size: 17px; font-weight: 800; display: flex; align-items: center; }
-  .ficha h2 button { margin-left: auto; color: var(--salvia); font-size: 22px; line-height: 1; width: 30px; height: 30px; }
-  .campo { display: grid; gap: 5px; }
-  .campo > span, .campo > legend { font: 500 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--salvia); padding: 0; }
-  fieldset.campo { border: 0; margin: 0; padding: 0; min-width: 0; }
-  .ficha input[type=text], .ficha input[type=date], .ficha input[type=time], .ficha input[type=number], .ficha textarea, .ficha select {
-    width: 100%; background: var(--preto); border: 1px solid var(--linha2); border-radius: 10px; padding: 10px 11px; color-scheme: dark; min-width: 0; }
-  .ficha textarea { resize: vertical; min-height: 44px; }
-  .ficha input:focus, .ficha textarea:focus, .ficha select:focus { outline: none; border-color: var(--verde); }
-  #f-titulo { font-size: 16px; font-weight: 700; }
-  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .tres { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chips label { position: relative; }
-  .chips input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
-  .chips span { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--linha2); font-weight: 700; font-size: 13px; color: var(--salvia); }
-  .chips span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--salvia)); }
-  .chips input:checked + span { background: var(--branco); color: var(--preto); border-color: var(--branco); }
-  .chips input:focus-visible + span { outline: 2px solid var(--verde); outline-offset: 2px; }
-  .atalhos { display: flex; gap: 6px; margin-top: 2px; }
-  .atalhos button { font-size: 12px; font-weight: 700; color: var(--salvia); border: 1px solid var(--linha); border-radius: 999px; padding: 3px 10px; }
-  .aviso { border-radius: 12px; padding: 10px 12px; font-size: 13px; display: grid; gap: 4px; }
-  .aviso.bate { background: rgba(255, 107, 94, .1); border: 1px solid rgba(255, 107, 94, .5); }
-  .aviso.bate b { color: var(--alerta); }
-  .aviso.cheio { background: rgba(255, 196, 107, .08); border: 1px solid rgba(255, 196, 107, .4); color: var(--ambar); }
-  .aviso .m { font-family: var(--mono); font-size: 12px; }
-  .acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .acoes .bt { height: 42px; padding: 0 16px; font-size: 14px; }
-  .acoes .dir { margin-left: auto; }
-  .erro { color: var(--alerta); font-size: 13px; min-height: 0; }
+  dialog { border: 0; background: var(--s1); color: var(--branco); border-radius: 22px; padding: 0; width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); }
+  dialog::backdrop { background: rgba(2, 6, 4, .74); }
+  .ficha { padding: 22px 22px 24px; display: grid; gap: 18px; }
+  .f-cab { display: flex; align-items: center; margin-bottom: -4px; }
+  .f-cab h2 { margin: 0 auto 0 0; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+  .f-cab h2:focus { outline: none; }
+  .x { width: 44px; height: 44px; margin-right: -10px; border-radius: 12px; display: grid; place-items: center; color: var(--salvia2); }
+  .x:hover { background: var(--s2); color: var(--branco); }
+  .campo { display: grid; gap: 8px; min-width: 0; border: 0; margin: 0; padding: 0; }
+  .campo > span, .campo > legend { font-size: 14px; font-weight: 700; color: var(--salvia2); padding: 0; }
+  fieldset.campo > legend { margin-bottom: 8px; }
+  .ficha input[type=text], .ficha input[type=date], .ficha input[type=time], .ficha input[type=number], .ficha textarea {
+    width: 100%; min-width: 0; height: 48px; background: var(--s2); border: 0; border-radius: 12px; padding: 0 14px; font-size: 16px; color-scheme: dark; transition: box-shadow .15s; }
+  .ficha textarea { height: auto; min-height: 76px; padding: 12px 14px; resize: vertical; line-height: 1.4; }
+  .ficha input:focus, .ficha textarea:focus { outline: none; box-shadow: 0 0 0 2px var(--verde); }
+  .ficha ::placeholder { color: var(--salvia); opacity: 1; }
+  #f-titulo { height: 52px; font-size: 18px; font-weight: 700; }
+  .opcoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opcoes label { position: relative; }
+  .opcoes input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .opcoes span { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 15px; border-radius: 999px; background: var(--s2); font-weight: 700; font-size: 15px; color: var(--salvia2); transition: background-color .15s, color .15s; }
+  .opcoes span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--salvia)); }
+  .opcoes input:checked + span { background: var(--branco); color: var(--preto); }
+  .opcoes input:focus-visible + span { outline: 2px solid var(--verde); outline-offset: 2px; }
+  .linha3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; }
+  .linha2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #f-aviso:empty { display: none; }
+  #f-aviso { display: grid; gap: 8px; }
+  #f-aviso .aviso-bate, #f-aviso .aviso-cheio { margin: 0; }
+  #f-aviso .aviso-bate { background: var(--s2); }
+  .f-acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-top: 2px; }
+  .f-acoes .bt { min-height: 48px; padding: 0 20px; }
+  .f-acoes .dir { margin-left: auto; }
 
   /* entrada */
-  .porta { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
-  .porta div { max-width: 380px; display: grid; gap: 14px; text-align: center; justify-items: center; }
-  .porta svg { height: 44px; color: var(--verde); }
-  .porta p { margin: 0; color: var(--salvia); }
-  .porta input { width: 100%; background: var(--fundo2); border: 1px solid var(--linha2); border-radius: 10px; padding: 12px; text-align: center; }
+  .porta { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; }
+  .porta > div { width: min(400px, 100%); display: grid; gap: 16px; justify-items: center; text-align: center; }
+  .porta svg { height: 48px; color: var(--verde); }
+  .porta h1 { margin: 8px 0 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+  .porta p { margin: 0; color: var(--salvia2); font-size: 16px; }
+  .porta input { width: 100%; height: 52px; background: var(--s1); border: 0; border-radius: 14px; padding: 0 16px; text-align: center; font-size: 16px; }
+  .porta input:focus { outline: none; box-shadow: 0 0 0 2px var(--verde); }
+  .porta .bt { width: 100%; min-height: 52px; font-size: 16px; }
 
-  .toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--branco); color: var(--preto); font-weight: 700; font-size: 13px; padding: 9px 16px; border-radius: 999px; z-index: 20; }
-  .ensaio { background: var(--ambar); color: var(--preto); font: 500 11px var(--mono); text-align: center; padding: 3px; letter-spacing: .08em; }
-
-  @media (max-width: 900px) {
-    .topo-in { grid-template-columns: auto 1fr auto; padding: 10px 14px 8px; }
-    .abas { justify-self: end; }
-    .abas button { padding: 6px 10px; }
-    .nav h1 { font-size: 17px; }
-    .nav .cheio { display: none; }
-    .marca b { display: none; }
-    .abas button { font-size: 12.5px; }
-    .topo-in { gap: 8px 10px; }
-    main { padding: 10px 12px 110px; }
-    .semana { grid-template-columns: 1fr; gap: 6px; }
-    .dia { min-height: 0; }
-    .dia.vazio-dia { flex-direction: row; align-items: center; }
-    .dia.vazio-dia > header { flex: 1; padding: 9px 10px; }
-    .dia.vazio-dia .livre { display: none; }
-    .dia.passado.vazio-dia { display: none; }
-    .cards { padding: 0 8px 9px; }
-    .card { padding: 10px 11px; }
-    .card .tit { font-size: 15px; }
-    .mais { width: 30px; height: 30px; }
-    .fab { display: grid; place-items: center; }
-    dialog { margin: auto auto 0; width: 100vw; max-width: 100vw; border-radius: 18px 18px 0 0; border-bottom: 0; max-height: 92dvh; }
-    .ficha { padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
-    .tres { grid-template-columns: 1fr 1fr; }
-    .tres .campo:first-child { grid-column: 1 / -1; }
-  }
-  .instalar { display: flex; align-items: center; gap: 10px; background: var(--floresta); color: var(--branco); font-size: 13px; padding: 9px 14px; }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--branco); color: var(--preto); font-weight: 700; font-size: 15px; min-height: 48px; padding: 0 18px; border-radius: 14px; z-index: 20; display: flex; align-items: center; gap: 4px; max-width: calc(100vw - 32px); white-space: nowrap; }
+  .toast button { height: 40px; padding: 0 10px; margin-right: -10px; border-radius: 10px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+  .instalar { display: flex; align-items: center; gap: 10px; background: var(--floresta); font-size: 14px; padding: 8px 16px; }
   .instalar span { flex: 1; }
-  .instalar button { font-weight: 800; font-size: 13px; padding: 6px 12px; border-radius: 999px; background: var(--verde); color: var(--preto); }
-  .instalar .x { background: none; color: var(--salvia); padding: 4px 6px; font-size: 18px; line-height: 1; }
+  .instalar button { font-weight: 800; font-size: 14px; min-height: 36px; padding: 0 14px; border-radius: 999px; background: var(--verde); color: var(--preto); }
+  .instalar .x { background: none; color: var(--salvia2); margin: 0; }
+
+  /* tela larga: mês à esquerda, dia à direita, tudo numa tela */
+  @media (min-width: 900px) {
+    #app.app { display: flex; flex-direction: column; height: 100dvh; }
+    .vistas { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .v-agenda { flex: 1; min-height: 0; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) clamp(330px, 30vw, 410px); grid-template-rows: minmax(0, 1fr); gap: 20px; }
+    .col-mes { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+    .topo-in { padding-top: 10px; padding-bottom: 10px; }
+    .v-agenda { padding-bottom: 16px; }
+    .mes-cab { margin-bottom: 10px; }
+    .dsem { margin-bottom: 4px; }
+    .grade { flex: 1 1 0; min-height: calc(var(--linhas, 6) * 74px); grid-template-rows: repeat(var(--linhas, 6), minmax(0, 1fr)); }
+    .painel { min-height: 0; overflow-y: auto; }
+    dialog { width: min(660px, calc(100vw - 48px)); }
+    .ficha { gap: 15px; padding: 22px 24px 24px; }
+    .ficha textarea { min-height: 64px; }
+    .opcoes span { padding: 0 14px; }
+    .lista-v { flex: 1; overflow-y: auto; width: 100%; max-width: none; padding-left: max(20px, calc((100% - 720px) / 2)); padding-right: max(20px, calc((100% - 720px) / 2)); }
+  }
+  /* janela estreita e celular: mês compacto em cima, dia embaixo */
+  @media (max-width: 899.98px) {
+    .topo-in { padding: 10px 16px; gap: 8px; }
+    .marca span { display: none; }
+    .sem-abas .marca span { display: inline; }
+    .abas button { height: 44px; padding: 0 11px; }
+    .v-agenda { padding: 2px 16px 40px; }
+    .mes-cab { margin-bottom: 8px; }
+    .mes-cab h1 { font-size: 25px; }
+    .dsem { gap: 0; margin-bottom: 2px; }
+    .dsem span { text-align: center; padding: 0; font-size: 12px; }
+    .grade { gap: 2px 0; }
+    .cel, .cel:hover, .cel.sel, .cel.sel:hover, .cel.fora:hover { background: none; }
+    .cel { align-items: center; padding: 3px 0 4px; gap: 3px; min-height: 50px; overflow: visible; }
+    .cel-topo { height: auto; }
+    .num { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 17px; font-weight: 600; }
+    .cel.hoje .num { background: none; color: var(--verde); font-weight: 800; }
+    .cel.sel .num { background: var(--branco); color: var(--preto); font-weight: 800; }
+    .cel.hoje.sel .num { background: var(--verde); color: var(--preto); }
+    .flag { position: absolute; top: 0; left: calc(50% + 11px); width: 16px; height: 16px; font-size: 11px; box-shadow: 0 0 0 2px var(--preto); }
+    .evs, .mais-n { display: none; }
+    .pontos { display: flex; gap: 3px; height: 6px; }
+    .pontos b { width: 6px; height: 6px; border-radius: 50%; background: var(--tc); }
+    .cel.passado .pontos, .cel.fora .pontos { opacity: .5; }
+    .cel.passado .num { font-weight: 600; }
+    .painel { margin-top: 12px; padding: 18px 16px 16px; }
+    .dia-cab h2 { font-size: 24px; }
+    .m-det { min-height: 44px; }
+    .it-linha { grid-template-columns: 48px 4px minmax(0, 1fr) auto; gap: 10px; padding: 12px 10px 12px 8px; }
+    .it-mais { padding: 0 10px 12px 10px; }
+    .it-acoes .bt { flex: 1; min-height: 48px; }
+    .lista-v { padding: 2px 16px 48px; }
+    .lista-cab h1 { font-size: 25px; }
+    dialog { margin: auto auto 0; width: 100vw; max-width: 100vw; border-radius: 22px 22px 0 0; max-height: 94dvh; }
+    .ficha { padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); gap: 16px; }
+    .opcoes span { height: 44px; }
+    .linha3 { grid-template-columns: 1fr 1fr; }
+    .linha3 .f-dia { grid-column: 1 / -1; }
+    .f-acoes .bt { flex: 1 1 auto; }
+    .f-acoes .dir { margin-left: 0; }
+  }
+  @media (max-width: 430px) { .topo-in { gap: 4px; } .marca { padding-right: 6px; } .abas button { padding: 0 9px; font-size: 14.5px; } }
+  @media (max-width: 370px) { .abas button { padding: 0 7px; font-size: 14px; } }
   @media (display-mode: standalone) { .topo-in { padding-top: calc(10px + env(safe-area-inset-top)); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body>
 <div id="app"></div>
-<dialog id="dlg"></dialog>
+<dialog id="dlg" aria-label="Ficha"></dialog>
 <script src="config.js"></script>
 <script>
 (() => {
   const CFG = window.AGENDA || {};
   const SIMBOLO = '<svg viewBox="0 0 230.91 207.09" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M141.58 8.37C150.94 15.34 156.35 25.12 161.34 35.44C161.94 36.68 162.55 37.92 163.15 39.15C167.99 49.06 172.70 59.02 177.31 69.04C178.00 70.54 178.69 72.04 179.39 73.54C181.87 78.91 184.34 84.28 186.81 89.66C187.00 90.08 187.20 90.51 187.40 90.93C187.44 91.04 187.44 91.04 187.69 91.58C188.10 92.46 188.50 93.34 188.90 94.22C189.11 94.66 189.31 95.11 189.52 95.56C192.80 102.70 196.10 109.84 199.41 116.98C204.30 127.53 209.17 138.09 214.01 148.66C214.71 150.17 215.40 151.69 216.10 153.21C219.96 161.61 223.82 170.03 227.59 178.48C227.89 179.15 228.20 179.83 228.50 180.50C228.91 181.42 229.32 182.33 229.73 183.25C229.85 183.52 229.97 183.79 230.10 184.06C230.20 184.31 230.31 184.56 230.42 184.81C230.52 185.02 230.61 185.23 230.71 185.45C230.91 186.04 230.91 186.04 230.91 187.18C230.31 187.57 230.31 187.57 229.46 187.93C229.30 188.00 229.30 188.00 228.48 188.34C228.13 188.49 227.77 188.63 227.40 188.78C227.03 188.94 226.65 189.10 226.28 189.25C225.26 189.68 224.24 190.10 223.22 190.53C222.16 190.97 221.09 191.41 220.03 191.85C218.71 192.40 217.39 192.95 216.07 193.50C213.22 194.69 210.38 195.89 207.55 197.12C206.33 197.64 205.11 198.16 203.90 198.68C202.93 199.10 201.96 199.52 200.99 199.94C199.92 200.41 198.84 200.87 197.76 201.33C197.44 201.47 197.12 201.61 196.80 201.75C196.50 201.88 196.21 202.00 195.91 202.13C195.78 202.18 195.78 202.18 195.14 202.46C193.98 202.68 193.08 202.61 192.03 202.05C191.42 201.34 191.07 200.56 190.70 199.72C190.59 199.48 190.47 199.24 190.35 198.99C190.10 198.46 189.86 197.94 189.62 197.41C189.23 196.57 188.84 195.73 188.44 194.90C187.45 192.82 186.48 190.73 185.51 188.64C177.05 170.49 177.05 170.49 168.59 166.60C168.36 166.48 168.12 166.36 167.87 166.24C159.35 162.09 148.28 163.78 139.63 166.70C139.19 166.86 138.74 167.01 138.29 167.17C138.07 167.25 137.85 167.33 137.62 167.41C120.78 173.34 104.86 182.38 89.13 190.75C75.18 198.17 60.10 206.05 43.96 206.62C43.71 206.63 43.45 206.64 43.19 206.65C32.73 207.09 22.73 204.83 14.23 198.61C13.90 198.39 13.57 198.17 13.24 197.94C6.83 193.21 2.99 184.50 1.78 176.82C0.00 162.02 5.69 148.24 11.94 135.16C11.99 135.06 11.99 135.06 12.22 134.58C13.36 132.20 14.55 129.85 15.75 127.50C16.33 126.37 16.91 125.23 17.49 124.10C22.31 114.62 27.23 105.22 32.58 96.02C33.04 95.24 33.49 94.46 33.94 93.68C44.02 76.30 54.18 58.85 65.99 42.56C66.72 41.55 67.44 40.53 68.17 39.50C79.80 23.00 93.19 5.35 114.28 1.55C123.71 0.00 133.86 2.81 141.58 8.37M101.13 62.55C100.91 62.76 100.69 62.96 100.46 63.18C97.46 66.03 94.79 69.06 92.20 72.30C91.25 73.48 90.29 74.64 89.30 75.79C89.23 75.87 89.23 75.87 88.90 76.26C88.77 76.41 88.64 76.56 88.50 76.72C85.70 79.99 83.03 83.33 80.48 86.81C79.72 87.86 78.94 88.89 78.16 89.93C42.64 136.77 42.64 136.77 44.38 154.76C44.94 158.30 46.90 161.56 49.68 163.83C53.92 166.85 59.90 167.26 64.89 166.45C81.59 163.22 97.08 152.66 111.48 144.14C113.13 143.16 114.79 142.19 116.45 141.23C140.98 126.90 140.98 126.90 146.15 116.82C146.21 116.71 146.21 116.71 146.50 116.15C150.44 108.03 148.83 98.98 146.01 90.78C144.10 85.45 141.78 80.28 139.44 75.13C139.29 74.80 139.14 74.47 138.99 74.14C137.95 71.86 136.89 69.60 135.83 67.34C135.69 67.04 135.55 66.74 135.41 66.44C132.86 60.99 129.75 54.80 123.75 52.60C114.60 49.48 107.31 56.67 101.13 62.55"/></svg>';
+  const SETA_E = '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const SETA_D = '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const MAIS = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+  const FECHAR = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   const TIPOS = [["gravacao", "Gravação"], ["cliente", "Cliente"], ["reuniao", "Reunião"], ["prospect", "Prospect"], ["pagar", "Pagar"], ["outro", "Outro"]];
+  const TIPO_NOME = Object.fromEntries(TIPOS);
   const ETAPAS = [["contato", "Contato"], ["analise", "Análise enviada"], ["reuniao", "Reunião"], ["proposta", "Proposta"], ["fechado", "Fechado"], ["perdido", "Perdido"]];
   const DSEM = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
-  const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  const DSEM_LONGO = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
+  const MES_LONGO = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const dt = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
   const soma = (s, n) => { const d = dt(s); d.setDate(d.getDate() + n); return iso(d); };
   const segunda = (s) => soma(s, -((dt(s).getDay() + 6) % 7));
+  const primeiro = (s) => s.slice(0, 8) + "01";
+  const fimGrade = (mes) => { const d = dt(mes); return soma(segunda(iso(new Date(d.getFullYear(), d.getMonth() + 1, 0))), 6); };
   const diaTxt = (s) => `${DSEM[dt(s).getDay()]} ${s.slice(8)}/${s.slice(5, 7)}`;
   const brl = (v) => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   const min = (h) => (h ? Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5)) : null);
+  const hc = (h) => (h ? `${Number(h.slice(0, 2))}h${h.slice(3, 5) === "00" ? "" : h.slice(3, 5)}` : "");
+  const curto = (t) => { const s = t.replace(/^(grava[cç][aã]o|gravar|filmagem|filmar|fotos?|reuni[aã]o|call|meet|visita|visitar|apresenta[cç][aã]o|proposta|pagar|pagamento|fatura|boleto|conta)\s+(?:(?:d[aoe]s?|n[ao]s?|com|ao|à|sobre)\s+)?/i, ""); return s && s !== t ? s.charAt(0).toUpperCase() + s.slice(1) : t; };
+  const faixa = (i, f) => `<span class="m">${i}</span>${f ? ` às <span class="m">${f}</span>` : ""}`;
+  const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+  const largo = () => matchMedia("(min-width: 900px)").matches;
   const IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-  const st = { chave: null, eu: null, pessoas: [], hoje: iso(new Date()), semana: null, eventos: [], contas: [], prospects: [], aba: "agenda", carregando: false };
+  // ── interpretador:início ── lê o que a pessoa escreveu ("gravação Evolution 9h às 12h com o Felipe").
+  // Função pura (não usa nada de fora): dev/testa-interpretador.mjs recorta este trecho e testa.
+  function interpretar(texto, ctx) {
+    ctx = ctx || {};
+    const NOMES_TIPO = { gravacao: "Gravação", cliente: "Cliente", reuniao: "Reunião", prospect: "Prospect", pagar: "Conta", outro: "Compromisso" };
+    const sem = (s) => s.split("").map((c) => (c.normalize("NFD")[0] || c).toLowerCase()).join("");
+    const reEsc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const orig = String(texto || "").replace(/\s+/g, " ").trim();
+    let n = sem(orig); if (n.length !== orig.length) n = orig.toLowerCase();
+    const socio = ctx.socio !== false, eu = ctx.eu || null, pessoas = ctx.pessoas || [];
+    const clientes = (ctx.clientes || []).filter((c) => c && String(c).trim().length >= 2).map(String).sort((a, b) => b.length - a.length);
+    const cortes = [], travas = [];
+    const livre = (i, f) => cortes.concat(travas).every(([a, b]) => f <= a || i >= b);
+    const r = { titulo: "", tipo: "outro", hora_ini: "", hora_fim: "", quem: [], valor: null, cliente: "" };
+
+    // nomes de clientes conhecidos ficam protegidos (o 8 de "Super 8" não é hora)
+    for (const c of clientes) {
+      const re = new RegExp(`(?<![a-z0-9])${reEsc(sem(c))}(?![a-z0-9])`, "g"); let m;
+      while ((m = re.exec(n))) travas.push([m.index, m.index + m[0].length]);
+    }
+
+    // 1. tipo: conta a pagar ganha de todas; nas outras vale a primeira palavra que aparece
+    const PAL = {
+      pagar: /\b(pagar|pagamento|boleto|boletos|fatura|darf|imposto|aluguel|mensalidade|parcela)\b/,
+      prospect: /\b(prospect|prospects|prospeccao|prospectar|apresentacao|apresentar|proposta|pitch)\b/,
+      gravacao: /\b(gravacao|gravacoes|gravar|filmar|filmagem|foto|fotos|fotografar|video|videos|captacao)\b/,
+      reuniao: /\b(reuniao|reunioes|reunir|call|meet|meeting|zoom|teams|videochamada|chamada|alinhamento)\b/,
+      cliente: /\b(visita|visitar|cliente|ir no|ir na|ir ao|ir ate|passar no|passar na)\b/,
+    };
+    const temValor = /\br\$|\d,\d{2}\b|\breais\b/.test(n);
+    const ehConta = PAL.pagar.test(n) || /\bDAS\b/.test(orig) || /\bdas\s+(do\s+)?mei\b/.test(n) || /^contas?\b/.test(n) || (/\bcontas?\b/.test(n) && temValor);
+    let kw = null;
+    if (socio && ehConta) r.tipo = "pagar";
+    else {
+      for (const t of ["prospect", "gravacao", "reuniao", "cliente"]) {
+        if (t === "prospect" && !socio) continue;
+        const m = PAL[t].exec(n);
+        if (m && (!kw || m.index < kw.i)) kw = { t, i: m.index };
+      }
+      if (kw) r.tipo = kw.t;
+    }
+
+    // 2. valor (só conta): R$ 86,05 · 86,05 · R$ 1.234,56 · 120 reais · 350
+    if (r.tipo === "pagar") {
+      const num = (s) => (/,/.test(s) ? Number(s.replace(/\./g, "").replace(",", ".")) : /^\d{1,3}(\.\d{3})+$/.test(s) ? Number(s.replace(/\./g, "")) : Number(s));
+      const res = [
+        /\br\$\s*(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)/,
+        /(?<![\d.,/:])(\d{1,3}(?:\.\d{3})+,\d{2}|\d+,\d{2})(?![\d,])/,
+        /(?<![\d.,/:])(\d+(?:,\d{1,2})?)\s*reais\b/,
+        /(?<![\d.,/:])(?<!\bdia\s)(\d{2,6})(?![\d.,/:h])/,
+      ];
+      for (const re of res) {
+        const m = re.exec(n);
+        if (m && livre(m.index, m.index + m[0].length)) { const v = num(m[1]); if (v > 0) { r.valor = Math.round(v * 100) / 100; cortes.push([m.index, m.index + m[0].length]); break; } }
+      }
+    }
+
+    // 3. hora (conta não tem hora)
+    if (r.tipo !== "pagar") {
+      const HH = (k) => String.raw`(?<h${k}>\d{1,2})(?:(?::|h)(?<m${k}>\d{2}))?(?<s${k}>\s*(?:horas?|hrs?|hs|h)(?![a-z]))?`;
+      const PER = String.raw`(?:\s+(?:da|de|a)\s+(?<per>manha|tarde|noite))?`;
+      const ajusta = (h, zero, per) => {
+        if (per === "tarde" || per === "noite") return h < 12 ? h + 12 : h;
+        if (per === "manha") return h;
+        return h >= 1 && h <= 6 && !zero ? h + 12 : h;     // "às 3" numa agenda de trabalho é 15h
+      };
+      const hm = (h, m) => `${String(h).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
+      const ok = (h, m) => h >= 0 && h <= 23 && m >= 0 && m <= 59;
+      const faixa = new RegExp(String.raw`(?<pre>\b(?:das?|de)\s+)?(?<![\d:/.,])` + HH(1) + String.raw`\s*(?<sep>as|a|ate|-|–)\s*` + HH(2) + PER + String.raw`(?![\d:/]|[.,]\d)`, "g");
+      let m;
+      while ((m = faixa.exec(n))) {
+        const g = m.groups, i = m.index, f = i + m[0].length;
+        const marca1 = g.m1 != null || !!g.s1, marca2 = g.m2 != null || !!g.s2;
+        const vale = g.pre || g.per || (g.sep === "-" || g.sep === "–" ? marca1 || marca2 : marca1 || (/^as|^ate/.test(g.sep) && marca2) || (g.sep === "as" && !marca1));
+        let h1 = ajusta(+g.h1, g.h1.length === 2 && g.h1[0] === "0", g.per), h2 = ajusta(+g.h2, g.h2.length === 2 && g.h2[0] === "0", g.per);
+        const m1 = +(g.m1 || 0), m2 = +(g.m2 || 0);
+        if (h2 * 60 + m2 <= h1 * 60 + m1 && +g.h2 < 12) h2 = +g.h2 + 12;
+        if (vale && livre(i, f) && ok(h1, m1) && ok(h2, m2) && h2 * 60 + m2 > h1 * 60 + m1) {
+          r.hora_ini = hm(h1, m1); r.hora_fim = hm(h2, m2); cortes.push([i, f]); break;
+        }
+        faixa.lastIndex = i + 1;
+      }
+      if (!r.hora_ini) {
+        const uma = new RegExp(String.raw`(?<pre>\b(?:a partir das?|as|das?)\s+)?(?<![\d:/.,])` + HH(1) + PER + String.raw`(?![\d:/]|[.,]\d)`, "g");
+        while ((m = uma.exec(n))) {
+          const g = m.groups, i = m.index, f = i + m[0].length;
+          const h = ajusta(+g.h1, g.h1.length === 2 && g.h1[0] === "0", g.per), mm = +(g.m1 || 0);
+          if ((g.pre || g.m1 != null || g.s1 || g.per) && livre(i, f) && ok(h, mm)) { r.hora_ini = hm(h, mm); cortes.push([i, f]); break; }
+          uma.lastIndex = i + 1;
+        }
+      }
+      if (!r.hora_ini) {
+        const md = /(?:\b(?:ao|as|a)\s+)?\bmeio[\s-]dia\b/.exec(n);
+        if (md && livre(md.index, md.index + md[0].length)) { r.hora_ini = "12:00"; cortes.push([md.index, md.index + md[0].length]); }
+      }
+    }
+
+    // 4. quem vai: "com o Felipe" = eu + Felipe; "felipe e nath" sozinho = só eles; ninguém citado = eu
+    if (r.tipo !== "pagar") {
+      const alias = [];
+      for (const p of pessoas) { const a = sem(String(p.nome || p.id)); for (const x of new Set([a, sem(String(p.id)), a.replace(/h$/, "")])) if (x.length >= 2) alias.push([x, p.id]); }
+      if (eu) alias.push(["eu", eu], ["mim", eu], ["comigo", eu]);
+      const citados = []; let com = false;
+      if (alias.length) {
+        const NOMES = alias.map(([a]) => a).sort((x, y) => y.length - x.length).map(reEsc).join("|");
+        const UM = `(?:\\b(?:o|a)\\s+)?\\b(?:${NOMES})\\b`;
+        const grupo = new RegExp(`(?<com>\\bcom\\s+)?${UM}(?:\\s*(?:,|\\be\\b)\\s*${UM})*`, "g");
+        let m;
+        while ((m = grupo.exec(n))) {
+          const i = m.index, f = i + m[0].length;
+          if (!livre(i, f)) { grupo.lastIndex = i + 1; continue; }
+          cortes.push([i, f]);
+          if (m.groups.com || /\bcomigo\b/.test(m[0])) com = true;
+          for (const x of m[0].match(new RegExp(`\\b(?:${NOMES})\\b`, "g")) || []) { const id = (alias.find(([a]) => a === x) || [])[1]; if (id && !citados.includes(id)) citados.push(id); }
+        }
+      }
+      const q = [];
+      if (eu && (com || citados.includes(eu) || !citados.length)) q.push(eu);
+      for (const id of citados) if (!q.includes(id)) q.push(id);
+      r.quem = pessoas.length ? q.filter((id) => pessoas.some((p) => p.id === id)) : q;
+    }
+
+    // 5. título: o que sobrou, sem pontas soltas
+    let t = orig;
+    for (const [i, f] of [...cortes].sort((a, b) => b[0] - a[0])) t = t.slice(0, i) + " " + t.slice(f);
+    t = t.replace(/\s+/g, " ").replace(/\s+([,.;:!?])/g, "$1").trim();
+    const PONTA = "(?:[,.;:·+\\-–]+|e|com|as|às|das|de|do|da|no|na|em|o|a|pra|para|ao|até|ate|dia)";
+    const sobra = new RegExp(`^${PONTA}(?:\\s+|$)|(?:^|\\s+)${PONTA}$`);
+    for (let k = 0; k < 8; k++) { const u = t.replace(sobra, "").trim(); if (u === t) break; t = u; }
+    // cliente conhecido volta com a grafia certa
+    for (const c of clientes) {
+      const m = new RegExp(`(?<![a-z0-9])${reEsc(sem(c))}(?![a-z0-9])`).exec(sem(t));
+      if (m) { t = t.slice(0, m.index) + c + t.slice(m.index + c.length); if (!r.cliente) r.cliente = c; }
+    }
+    // a palavra logo depois de "gravação", "visita", "call"... costuma ser o cliente: ganha maiúscula
+    if (kw && r.tipo !== "pagar") {
+      const nt = sem(t), k = PAL[r.tipo].exec(nt);
+      if (k) {
+        const resto = nt.slice(k.index + k[0].length);
+        const w = /^\s+((?:(?:no|na|ao|com|cliente)\s+)*)([a-z][a-z0-9&]*)/.exec(resto);
+        const PARADA = new Set(["sobre", "para", "pra", "de", "do", "da", "dos", "das", "e", "o", "a", "os", "as", "um", "uma", "em", "hoje", "amanha", "tarde", "manha", "noite", "dia", "geral", "interna", "rapida"]);
+        if (w && w[2].length >= 3 && !PARADA.has(w[2])) {
+          const pos = k.index + k[0].length + w[0].length - w[2].length;
+          if (/[a-zà-ÿ]/.test(t[pos])) t = t.slice(0, pos) + t[pos].toUpperCase() + t.slice(pos + 1);
+        }
+      }
+    }
+    if (!t) t = NOMES_TIPO[r.tipo];
+    r.titulo = (t.charAt(0).toUpperCase() + t.slice(1)).slice(0, 140);
+    return r;
+  }
+  // ── interpretador:fim ──
+
+  const st = { chave: null, eu: null, pessoas: [], hoje: iso(new Date()), mes: null, sel: null, eventos: [], contas: [], prospects: [], aba: "agenda", aberto: null, novo: null };
   const guarda = { ler: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, por: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
 
   async function rpc(fn, args) {
@@ -230,19 +511,23 @@
   }[m] || m);
 
   let toastT;
-  function toast(msg) {
+  function toast(msg, acao, fn) {
     document.querySelectorAll(".toast").forEach((e) => e.remove());
-    const e = document.createElement("div"); e.className = "toast"; e.setAttribute("role", "status"); e.textContent = msg; document.body.append(e);
-    clearTimeout(toastT); toastT = setTimeout(() => e.remove(), 2600);
+    const e = document.createElement("div"); e.className = "toast"; e.setAttribute("role", "status");
+    const s = document.createElement("span"); s.textContent = msg; e.append(s);
+    if (acao) { const b = document.createElement("button"); b.textContent = acao; b.onclick = () => { e.remove(); fn(); }; e.append(b); }
+    document.body.append(e);
+    clearTimeout(toastT); toastT = setTimeout(() => e.remove(), acao ? 6000 : 2600);
   }
 
   // ───────── entrada ─────────
   function porta(msg) {
+    $("#app").className = "";
     $("#app").innerHTML = `<div class="porta"><div>${SIMBOLO}
-      <h1 style="margin:0;font-size:22px;font-weight:800">Agenda da Anvil</h1>
+      <h1>Agenda da Anvil</h1>
       <p>${esc(msg || "Abra pelo link que o Augusto te mandou. Se já tem a chave, cole aqui.")}</p>
       <input id="p-chave" type="text" autocomplete="off" placeholder="link ou chave" aria-label="Link ou chave de acesso">
-      <button class="bt cheio" id="p-ok" style="height:42px;padding:0 22px">Entrar</button></div></div>`;
+      <button class="bt cheio" id="p-ok">Entrar</button></div></div>`;
     $("#p-ok").onclick = () => { const v = $("#p-chave").value.trim(); const k = (v.match(/k=([^&\s]+)/) || [])[1] || v; if (k) { st.chave = k; entrar(); } };
     $("#p-chave").onkeydown = (e) => { if (e.key === "Enter") $("#p-ok").click(); };
   }
@@ -250,9 +535,9 @@
     if (!CFG.url) return porta("A agenda ainda não está ligada na internet. Por enquanto ela abre só no computador do Augusto.");
     try {
       const r = await rpc("agenda_entrar", {});
-      st.eu = r.eu; st.pessoas = r.pessoas; st.hoje = r.hoje || st.hoje; st.semana = segunda(st.hoje);
+      st.eu = r.eu; st.pessoas = r.pessoas; st.hoje = r.hoje || st.hoje; st.mes = primeiro(st.hoje); st.sel = st.hoje;
       guarda.por("agenda.chave", st.chave);
-      casca(); await carregar();
+      casca(); desenha(); await carregar();
     } catch (e) {
       if (/chave/.test(e.message)) { guarda.por("agenda.chave", null); porta(traduz("chave invalida")); }
       else porta(traduz(e.message));
@@ -261,49 +546,105 @@
 
   // ───────── dados ─────────
   const socio = () => st.eu && st.eu.papel !== "equipe";
+  let cargaSeq = 0, emVoo = false;
   async function carregar(silencioso) {
-    if (st.carregando) return; st.carregando = true;
+    if (silencioso && emVoo) return;
+    const meu = ++cargaSeq; emVoo = true;
     try {
-      const pedidos = [rpc("agenda_listar", { p_de: st.semana, p_ate: soma(st.semana, 6) })];
+      const pedidos = [rpc("agenda_listar", { p_de: segunda(st.mes), p_ate: fimGrade(st.mes) })];
       if (socio()) pedidos.push(rpc("agenda_contas", {}), rpc("agenda_prospects", {}));
       const [ev, contas, prospects] = await Promise.all(pedidos);
+      if (meu !== cargaSeq) return;
       st.eventos = ev; if (contas) st.contas = contas; if (prospects) st.prospects = prospects;
       desenha();
-    } catch (e) { if (!silencioso) toast(traduz(e.message)); }
-    finally { st.carregando = false; }
+    } catch (e) { if (!silencioso && meu === cargaSeq) toast(traduz(e.message)); }
+    finally { if (meu === cargaSeq) emVoo = false; }
   }
 
   // quem bate com quem, só para pintar (a regra que vale é a do banco)
   function batidas(evs) {
-    const s = new Set();
+    const s = new Map();
     const lista = evs.filter((e) => e.status === "marcado" && e.tipo !== "pagar" && e.hora_ini);
     for (let i = 0; i < lista.length; i++) for (let j = i + 1; j < lista.length; j++) {
       const a = lista[i], b = lista[j];
       if (a.dia !== b.dia || !a.quem.some((q) => b.quem.includes(q))) continue;
       const af = min(a.hora_fim) ?? min(a.hora_ini) + 60, bf = min(b.hora_fim) ?? min(b.hora_ini) + 60;
-      if (min(a.hora_ini) < bf && min(b.hora_ini) < af) { s.add(a.id); s.add(b.id); }
+      if (min(a.hora_ini) < bf && min(b.hora_ini) < af) { s.set(a.id, [...(s.get(a.id) || []), b]); s.set(b.id, [...(s.get(b.id) || []), a]); }
     }
     return s;
   }
   const pessoa = (id) => st.pessoas.find((p) => p.id === id) || { id, nome: id, cor: "#86A195" };
-  const bolinhas = (quem) => quem.length ? `<span class="quem">${quem.map((q) => { const p = pessoa(q); return `<b style="--c:${esc(p.cor || "#86A195")}" title="${esc(p.nome)}">${esc(p.nome[0])}</b>`; }).join("")}</span>` : "";
+  const nomes = (quem) => quem.map((q) => pessoa(q).nome).join(", ");
+  const bolinhas = (quem) => quem.length ? `<span class="quem" aria-label="${esc(nomes(quem))}">${quem.map((q) => { const p = pessoa(q); return `<b style="--c:${esc(p.cor || "#86A195")}" title="${esc(p.nome)}">${esc(p.nome[0])}</b>`; }).join("")}</span>` : "";
+  const ordem = (a, b) => (a.tipo === "pagar") - (b.tipo === "pagar") || (a.hora_ini || "").localeCompare(b.hora_ini || "") || a.titulo.localeCompare(b.titulo);
+  const doDia = (d) => st.eventos.filter((e) => e.dia === d).sort(ordem);
+  const acharEv = (id) => st.eventos.find((e) => e.id === id) || st.contas.find((e) => e.id === id);
+  function carga(evs) {
+    const comp = evs.filter((e) => e.tipo !== "pagar" && e.status === "marcado");
+    const porPessoa = Math.max(0, ...st.pessoas.map((p) => comp.filter((e) => e.quem.includes(p.id)).length));
+    return { comp, cheio: porPessoa >= 3 || comp.length >= 4 };
+  }
+  const clientesConhecidos = () => [...new Set([...st.eventos, ...st.contas].map((e) => e.cliente).concat(st.prospects.map((p) => p.nome)).filter(Boolean))];
 
   // ───────── casca ─────────
   function casca() {
+    $("#app").className = "app";
     $("#app").innerHTML = `
       ${CFG.ensaio ? '<div class="ensaio">ENSAIO · dados de teste, nada aqui é a agenda de verdade</div>' : ""}
-      <div class="topo"><div class="topo-in">
-        <div class="marca">${SIMBOLO}<b>Agenda</b></div>
-        <div class="abas" role="tablist" id="abas"></div>
+      <header class="topo"><div class="topo-in">
+        <div class="marca">${SIMBOLO}<span>Agenda</span></div>
+        <div class="abas" role="tablist" id="abas" aria-label="Seções"></div>
         <button class="eu" id="eu" title="${esc(st.eu.nome)}" aria-label="Você entrou como ${esc(st.eu.nome)}">${esc(st.eu.nome[0])}</button>
-        <div class="nav" id="nav"></div>
-        <div class="resumo" id="resumo" aria-live="polite"></div>
-      </div></div>
+      </div></header>
       <div class="instalar" id="instalar" hidden></div>
-      <main id="main"></main>
-      <button class="fab" id="fab" aria-label="Marcar compromisso">+</button>`;
+      <main class="vistas">
+        <div class="v-agenda" id="v-agenda">
+          <section class="col-mes" aria-label="Mês">
+            <div class="mes-cab">
+              <h1 id="mes-tit" aria-live="polite"></h1>
+              <button class="nav-bt" id="n-ant" aria-label="Mês anterior">${SETA_E}</button>
+              <button class="nav-hoje" id="n-hoje">Hoje</button>
+              <button class="nav-bt" id="n-prox" aria-label="Próximo mês">${SETA_D}</button>
+            </div>
+            <div class="dsem" aria-hidden="true">${["seg", "ter", "qua", "qui", "sex", "sáb", "dom"].map((d) => `<span>${d}</span>`).join("")}</div>
+            <div class="grade" id="grade" role="group" aria-label="Dias do mês"></div>
+          </section>
+          <section class="painel" id="painel" aria-label="Dia escolhido">
+            <div class="dia-cab" id="dia-cab"></div>
+            <form class="marcar" id="marcar" autocomplete="off" novalidate>
+              <div class="m-campo">
+                <span class="m-mais" aria-hidden="true">${MAIS}</span>
+                <input id="m-txt" type="text" maxlength="160" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="Marcar compromisso: escreva e dê Enter" aria-describedby="m-pv">
+                <button class="m-ok" id="m-ok" type="submit" hidden>Marcar</button>
+              </div>
+              <div class="m-previa"><span class="pv" id="m-pv" aria-live="polite"></span><button type="button" class="m-det" id="m-det">detalhes</button></div>
+              <div id="m-aviso" aria-live="polite"></div>
+            </form>
+            <ul class="itens" id="itens"></ul>
+          </section>
+        </div>
+        <section class="lista-v" id="v-contas" hidden></section>
+        <section class="lista-v" id="v-prospects" hidden></section>
+      </main>`;
     $("#eu").onclick = () => { if (confirm(`Você entrou como ${st.eu.nome}. Sair deste aparelho?`)) { guarda.por("agenda.chave", null); location.reload(); } };
-    $("#fab").onclick = () => (st.aba === "prospects" ? fichaProspect() : ficha({ tipo: st.aba === "contas" ? "pagar" : "gravacao", dia: st.hoje }));
+    $("#abas").onclick = (e) => { const b = e.target.closest("[data-aba]"); if (b) { st.aba = b.dataset.aba; st.aberto = null; desenha(); } };
+    $("#n-ant").onclick = () => irMes(-1);
+    $("#n-prox").onclick = () => irMes(1);
+    $("#n-hoje").onclick = () => selecionar(st.hoje);
+    $("#grade").addEventListener("click", (e) => { const c = e.target.closest(".cel"); if (c) selecionar(c.dataset.dia); });
+    $("#grade").addEventListener("dblclick", (e) => { if (e.target.closest(".cel")) $("#m-txt").focus(); });
+    $("#grade").addEventListener("keydown", (e) => {
+      const passo = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+      if (passo) { e.preventDefault(); selecionar(soma(st.sel, passo), true); }
+      else if (e.key === "Enter" && e.target.closest(".cel") && largo()) { e.preventDefault(); $("#m-txt").focus(); }
+    });
+    $("#itens").addEventListener("click", cliqueItem);
+    $("#v-contas").addEventListener("click", (e) => { if (e.target.closest("#c-nova")) return ficha({ tipo: "pagar", dia: st.hoje }); cliqueItem(e); });
+    $("#v-prospects").addEventListener("click", (e) => {
+      if (e.target.closest("#p-novo")) return fichaProspect();
+      const l = e.target.closest("[data-pid]"); if (l) fichaProspect(st.prospects.find((p) => p.id === l.dataset.pid));
+    });
+    ligaMarcar();
     dicaInstalar();
   }
 
@@ -314,7 +655,7 @@
     const el = $("#instalar"); if (!el) return;
     const dentro = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
     if (dentro || innerWidth > 900 || guarda.ler("agenda.semDica")) return;
-    const fecha = '<button class="x" id="i-x" aria-label="Fechar">×</button>';
+    const fecha = `<button class="x" id="i-x" aria-label="Fechar">${FECHAR}</button>`;
     if (pedidoInstalar) el.innerHTML = `<span>Quer a agenda como aplicativo neste celular?</span><button id="i-ok">Instalar</button>${fecha}`;
     else if (IOS) el.innerHTML = `<span>Para virar aplicativo: toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</span>${fecha}`;
     else return;
@@ -324,130 +665,267 @@
   }
 
   function desenha() {
-    const abertas = st.contas.length, vencidas = st.contas.filter((c) => c.dia < st.hoje).length;
+    desenhaAbas();
+    $("#v-agenda").hidden = st.aba !== "agenda";
+    $("#v-contas").hidden = st.aba !== "contas";
+    $("#v-prospects").hidden = st.aba !== "prospects";
+    if (st.aba === "agenda") { desenhaMes(); desenhaDia(); }
+    else if (st.aba === "contas") desenhaContas(); else desenhaProspects();
+  }
+
+  function desenhaAbas() {
+    const venc = st.contas.filter((c) => c.dia < st.hoje).length;
     const pAbertos = st.prospects.filter((p) => !["fechado", "perdido"].includes(p.etapa)).length;
-    $("#abas").innerHTML = [["agenda", "Agenda", ""], ...(socio() ? [["contas", "Contas", abertas || ""], ["prospects", "Prospects", pAbertos || ""]] : [])]
-      .map(([id, nome, n]) => `<button role="tab" data-aba="${id}" aria-selected="${st.aba === id}">${nome}${n !== "" ? `<span class="n">${n}</span>` : ""}</button>`).join("");
-    $("#abas").querySelectorAll("button").forEach((b) => (b.onclick = () => { st.aba = b.dataset.aba; desenha(); }));
+    const abas = [["agenda", "Agenda", ""], ...(socio() ? [["contas", "Contas", st.contas.length || ""], ["prospects", "Prospects", pAbertos || ""]] : [])];
+    $("#abas").innerHTML = abas.map(([id, nome, n]) => {
+      const al = id === "contas" && venc;
+      const rot = id === "contas" && n ? `${nome}, ${n} em aberto${venc ? `, ${venc} vencida${venc > 1 ? "s" : ""}` : ""}` : nome;
+      return `<button role="tab" data-aba="${id}" aria-selected="${st.aba === id}" aria-label="${rot}">${nome}${n !== "" ? `<span class="n ${al ? "al" : ""}">${n}</span>` : ""}</button>`;
+    }).join("");
     $("#abas").hidden = !socio();
-
-    // resumo de hoje
-    const deHoje = st.eventos.filter((e) => e.dia === st.hoje && e.tipo !== "pagar" && e.status === "marcado");
-    const agora = new Date(); const agoraMin = agora.getHours() * 60 + agora.getMinutes();
-    const prox = deHoje.filter((e) => e.hora_ini && min(e.hora_ini) >= agoraMin)[0];
-    let r = st.semana === segunda(st.hoje)
-      ? `Hoje: <b>${deHoje.length === 0 ? "nada marcado" : deHoje.length === 1 ? "1 compromisso" : deHoje.length + " compromissos"}</b>${prox ? ` · próximo às <b>${prox.hora_ini}</b> ${esc(prox.titulo)}` : ""}`
-      : "";
-    if (socio() && vencidas) r += `${r ? " · " : ""}<span class="al">${vencidas} conta${vencidas > 1 ? "s" : ""} vencida${vencidas > 1 ? "s" : ""}</span>`;
-    $("#resumo").innerHTML = r;
-
-    if (st.aba === "agenda") desenhaSemana(); else if (st.aba === "contas") desenhaContas(); else desenhaProspects();
+    $(".topo").classList.toggle("sem-abas", !socio());
   }
 
-  function desenhaSemana() {
-    const fim = soma(st.semana, 6), a = dt(st.semana), b = dt(fim);
-    const titulo = a.getMonth() === b.getMonth() ? `${a.getDate()} a ${b.getDate()} de ${MES[b.getMonth()]}` : `${a.getDate()} de ${MES[a.getMonth()]} a ${b.getDate()} de ${MES[b.getMonth()]}`;
-    const naSemana = st.semana === segunda(st.hoje);
-    $("#nav").innerHTML = `<h1>${titulo}<small>${b.getFullYear()}</small></h1>
-      <button class="bt seta" id="n-ant" aria-label="Semana anterior">‹</button>
-      <button class="bt" id="n-hoje" ${naSemana ? "disabled style='opacity:.45'" : ""}>Hoje</button>
-      <button class="bt seta" id="n-prox" aria-label="Próxima semana">›</button>
-      <button class="bt cheio" id="n-novo">+ Marcar</button>`;
-    $("#n-ant").onclick = () => { st.semana = soma(st.semana, -7); carregar(); };
-    $("#n-prox").onclick = () => { st.semana = soma(st.semana, 7); carregar(); };
-    $("#n-hoje").onclick = () => { st.semana = segunda(st.hoje); carregar(); };
-    $("#n-novo").onclick = () => ficha({ tipo: "gravacao", dia: st.semana <= st.hoje && st.hoje <= fim ? st.hoje : st.semana });
-
-    const bate = batidas(st.eventos);
-    let html = '<div class="semana">';
-    for (let i = 0; i < 7; i++) {
-      const d = soma(st.semana, i);
-      const evs = st.eventos.filter((e) => e.dia === d);
-      const comp = evs.filter((e) => e.tipo !== "pagar" && e.status === "marcado");
+  // ───────── mês ─────────
+  function irMes(n) {
+    const d = dt(st.mes); d.setMonth(d.getMonth() + n);
+    st.mes = iso(d); st.sel = primeiro(st.hoje) === st.mes ? st.hoje : st.mes; st.aberto = null;
+    desenhaMes(); desenhaDia(); mAtualiza(); carregar();
+  }
+  function selecionar(d, foco) {
+    const mudouMes = primeiro(d) !== st.mes;
+    if (d !== st.sel) st.aberto = null;
+    st.sel = d; if (mudouMes) st.mes = primeiro(d);
+    if (st.aba !== "agenda") { st.aba = "agenda"; desenha(); } else { desenhaMes(); desenhaDia(); }
+    mAtualiza();
+    if (foco) { const c = $(`.cel[data-dia="${d}"]`); if (c) c.focus(); }
+    if (mudouMes) carregar();
+  }
+  function desenhaMes() {
+    const m = dt(st.mes);
+    $("#mes-tit").innerHTML = `${MES_LONGO[m.getMonth()].replace(/^./, (c) => c.toUpperCase())} <span>${m.getFullYear()}</span>`;
+    $("#n-hoje").disabled = st.sel === st.hoje;
+    const ini = segunda(st.mes), fim = fimGrade(st.mes), bate = batidas(st.eventos);
+    const focado = document.activeElement && document.activeElement.closest && document.activeElement.closest(".cel") ? document.activeElement.dataset.dia : null;
+    let h = "", n = 0;
+    for (let d = ini; d <= fim; d = soma(d, 1), n++) {
+      const D = dt(d), evs = doDia(d), { comp, cheio } = carga(evs);
       const temBate = comp.some((e) => bate.has(e.id));
-      const porPessoa = Math.max(0, ...st.pessoas.map((p) => comp.filter((e) => e.quem.includes(p.id)).length));
-      const cl = temBate ? "bate" : porPessoa >= 3 || comp.length >= 4 ? "cheio" : "";
-      const rot = temBate ? "bate" : comp.length ? `${comp.length}${cl === "cheio" ? " · cheio" : ""}` : "";
-      html += `<section class="dia ${d === st.hoje ? "hoje" : ""} ${d < st.hoje ? "passado" : ""} ${evs.length ? "" : "vazio-dia"}" aria-label="${diaTxt(d)}">
-        <header><span class="dsem">${DSEM[dt(d).getDay()]}</span><span class="dnum">${dt(d).getDate()}</span>
-          ${rot ? `<span class="carga ${cl}" title="${temBate ? "Tem compromisso batendo horário" : comp.length + " compromissos"}">${rot}</span>` : '<span class="carga"></span>'}
-          <button class="mais" data-dia="${d}" aria-label="Marcar em ${diaTxt(d)}">+</button></header>
-        ${evs.length ? `<div class="cards">${evs.map((e) => cartao(e, bate.has(e.id))).join("")}</div>` : '<div class="livre">livre</div>'}
-      </section>`;
+      const cl = ["cel", d === st.hoje && "hoje", d === st.sel && "sel", d < st.hoje && "passado", primeiro(d) !== st.mes && "fora"].filter(Boolean).join(" ");
+      const rot = `${DSEM_LONGO[D.getDay()]}, ${D.getDate()} de ${MES_LONGO[D.getMonth()]}${d === st.hoje ? ", hoje" : ""}${evs.length ? `, ${plural(evs.length, "compromisso", "compromissos")}` : ""}${temBate ? ", horário batendo" : cheio ? ", dia cheio" : ""}`;
+      const chips = evs.slice(0, 3).map((e) => `<span class="chip t-${e.tipo}${e.status === "feito" ? " feito" : ""}${bate.has(e.id) ? " bate" : ""}" title="${esc(e.titulo)}"><i>${e.tipo === "pagar" ? "R$" : e.hora_ini ? hc(e.hora_ini) : "·"}</i><span>${esc(curto(e.titulo))}</span></span>`).join("");
+      const flag = temBate ? '<span class="flag bate" aria-hidden="true">!</span>' : cheio ? '<span class="flag cheio" aria-hidden="true">!</span>' : "";
+      h += `<button class="${cl}" data-dia="${d}" data-n="${evs.length}" tabindex="${d === st.sel ? 0 : -1}" aria-pressed="${d === st.sel}" aria-label="${rot}"${d === st.hoje ? ' aria-current="date"' : ""}>
+        <span class="cel-topo"><span class="num">${D.getDate()}</span>${flag}<span class="mais-n" aria-hidden="true">${evs.length > 3 ? `+${evs.length - 3}` : ""}</span></span>
+        <span class="evs">${chips}</span>
+        <span class="pontos">${evs.slice(0, 3).map((e) => `<b class="t-${e.tipo}"></b>`).join("")}</span></button>`;
     }
-    $("#main").innerHTML = html + "</div>";
-    $("#main").querySelectorAll(".mais").forEach((b) => (b.onclick = () => ficha({ tipo: "gravacao", dia: b.dataset.dia })));
-    $("#main").querySelectorAll(".card").forEach((c) => (c.onclick = () => { const e = st.eventos.find((x) => x.id === c.dataset.id); if (e && e.pode_editar) ficha(e); else if (e) toast(e.oculto ? "Horário ocupado" : "Só quem marcou pode mexer"); }));
+    $("#grade").innerHTML = h;
+    $("#grade").style.setProperty("--linhas", n / 7);
+    if (focado) { const c = $(`.cel[data-dia="${focado}"]`); if (c) c.focus(); }
+    ajustaChips();
+  }
+  // na tela larga, cada dia mostra só os compromissos que cabem inteiros; o resto vira "+N"
+  function ajustaChips() {
+    if (!largo()) return;
+    for (const c of document.querySelectorAll("#grade .cel")) {
+      const total = Number(c.dataset.n) || 0; if (!total) continue;
+      const lim = c.getBoundingClientRect().bottom - 3; let vis = 0;
+      c.querySelectorAll(".chip").forEach((ch) => (ch.hidden = false));
+      c.querySelectorAll(".chip").forEach((ch) => { if (ch.getBoundingClientRect().bottom > lim) ch.hidden = true; else vis++; });
+      const m = c.querySelector(".mais-n"); if (m) m.textContent = total > vis ? `+${total - vis}` : "";
+    }
+  }
+  let tRedim; window.addEventListener("resize", () => { clearTimeout(tRedim); tRedim = setTimeout(ajustaChips, 120); });
+
+  // ───────── dia ─────────
+  function desenhaDia() {
+    const d = st.sel, D = dt(d), evs = doDia(d), bate = batidas(st.eventos), { comp, cheio } = carga(evs);
+    const rel = d === st.hoje ? "Hoje" : d === soma(st.hoje, 1) ? "Amanhã" : d === soma(st.hoje, -1) ? "Ontem" : "";
+    const agora = new Date(), agoraMin = agora.getHours() * 60 + agora.getMinutes();
+    const prox = d === st.hoje ? comp.find((e) => e.hora_ini && min(e.hora_ini) >= agoraMin) : null;
+    const contas = evs.filter((e) => e.tipo === "pagar" && e.status === "marcado").length;
+    const res = [comp.length ? plural(comp.length, "compromisso", "compromissos") : evs.length ? "Nada marcado" : "Dia livre"];
+    if (prox) res.push(`próximo às <span class="m">${prox.hora_ini}</span>`);
+    if (contas) res.push(plural(contas, "conta vence", "contas vencem"));
+    $("#dia-cab").innerHTML = `<p class="ds">${rel ? `<b>${rel}</b> · ` : ""}${DSEM_LONGO[D.getDay()]}</p>
+      <h2>${D.getDate()} de ${MES_LONGO[D.getMonth()]}</h2>
+      <p class="dia-res"><span>${res.join(" · ")}</span>${comp.some((e) => bate.has(e.id)) ? '<span class="tag bate">horário batendo</span>' : ""}${cheio ? '<span class="tag cheio">dia cheio</span>' : ""}</p>`;
+    $("#m-txt").placeholder = `Marcar em ${diaTxt(d)}…`;
+    $("#itens").innerHTML = evs.map((e) => item(e, bate.get(e.id))).join("");
+    if (st.novo) setTimeout(() => (st.novo = null), 50);
+  }
+  function item(e, comQuem, naLista) {
+    const conta = e.tipo === "pagar", aberto = st.aberto === e.id;
+    const hora = naLista ? `<b class="${e.dia < st.hoje ? "venc" : ""}">${e.dia.slice(8)}/${e.dia.slice(5, 7)}</b><i>${e.dia === st.hoje ? "hoje" : DSEM[dt(e.dia).getDay()]}</i>`
+      : conta ? '<b class="sh">conta</b>' : e.hora_ini ? `<b>${e.hora_ini}</b>${e.hora_fim ? `<i>${e.hora_fim}</i>` : ""}` : '<b class="sh">sem hora</b>';
+    const sub = [e.cliente, conta ? null : e.local, conta && e.origem === "email" ? "veio do e-mail" : null].filter(Boolean).map(esc).join(" · ");
+    const bate = comQuem && comQuem.length ? `<span class="it-bate">Bate com ${comQuem.map((x) => esc(x.titulo)).join(", ")}</span>` : "";
+    const cl = ["item", `t-${e.tipo}`, e.status === "feito" && "feito", e.oculto && "oculto", aberto && "aberto", st.novo === e.id && "novo"].filter(Boolean).join(" ");
+    return `<li class="${cl}" data-id="${e.id}">
+      <button class="it-linha" aria-expanded="${aberto}">
+        <span class="it-hora">${hora}</span><span class="it-cor" aria-hidden="true"></span>
+        <span class="it-txt"><span class="it-tit">${esc(e.titulo)}</span>${sub ? `<span class="it-sub">${sub}</span>` : ""}${bate}</span>
+        ${conta ? (e.valor != null ? `<span class="it-valor">${brl(e.valor)}</span>` : "") : bolinhas(e.quem)}
+      </button>${aberto ? detalhe(e) : ""}</li>`;
+  }
+  function detalhe(e) {
+    const conta = e.tipo === "pagar";
+    const linhas = [
+      conta ? `Vence ${diaTxt(e.dia)}` : `${TIPO_NOME[e.tipo]} · ${diaTxt(e.dia)}${e.hora_ini ? ` · ${e.hora_ini}${e.hora_fim ? ` às ${e.hora_fim}` : ""}` : ""}`,
+      !conta && e.quem.length ? `Vão: ${nomes(e.quem)}` : null,
+      e.local && !conta ? `Onde: ${e.local}` : null,
+      e.obs ? e.obs : null,
+    ].filter(Boolean).map((l) => `<span>${esc(l)}</span>`).join("");
+    return `<div class="it-mais"><p class="it-det">${linhas}</p><div class="it-acoes">
+      <button class="bt cheio" data-acao="feito">${conta ? (e.status === "feito" ? "Reabrir" : "Pago") : e.status === "feito" ? "Reabrir" : "Feito"}</button>
+      <button class="bt" data-acao="mudar">Mudar</button>
+      <button class="bt perigo" data-acao="desmarcar">${conta ? "Apagar" : "Desmarcar"}</button></div></div>`;
+  }
+  function cliqueItem(ev) {
+    const li = ev.target.closest("[data-id]"); if (!li) return;
+    const e = acharEv(li.dataset.id); if (!e) return;
+    const acao = ev.target.closest("[data-acao]");
+    if (acao) return agir(acao.dataset.acao, e, acao);
+    if (!ev.target.closest(".it-linha")) return;
+    if (e.oculto) return toast("Horário ocupado");
+    if (!e.pode_editar) return toast("Só quem marcou pode mexer");
+    st.aberto = st.aberto === e.id ? null : e.id;
+    if (st.aba === "contas") desenhaContas(); else desenhaDia();
+    const b = $(`[data-id="${e.id}"] .it-linha`); if (b) b.focus();
+  }
+  async function agir(acao, e, bt) {
+    if (acao === "mudar") return ficha(e);
+    if (bt) bt.disabled = true;
+    try {
+      if (acao === "feito") {
+        const novo = e.status === "feito" ? "marcado" : "feito";
+        await rpc("agenda_status", { p_id: e.id, p_status: novo });
+        st.aberto = null;
+        toast(e.tipo === "pagar" ? (novo === "feito" ? "Conta paga" : "Conta reaberta") : novo === "feito" ? "Feito" : "Reaberto", "Desfazer", () => volta(e.id, e.status));
+      } else if (acao === "desmarcar") {
+        await rpc("agenda_status", { p_id: e.id, p_status: "cancelado" });
+        st.aberto = null;
+        toast(e.tipo === "pagar" ? "Conta apagada" : "Desmarcado", "Desfazer", () => volta(e.id, "marcado"));
+      }
+      if (dlg.open) dlg.close();
+      await carregar();
+    } catch (er) { if (bt) bt.disabled = false; toast(traduz(er.message)); }
+  }
+  async function volta(id, status) { try { await rpc("agenda_status", { p_id: id, p_status: status }); await carregar(); } catch (er) { toast(traduz(er.message)); } }
+
+  // ───────── marcar digitando ─────────
+  let mSeq = 0, mT = null;
+  const mLe = () => interpretar($("#m-txt").value, { eu: st.eu.id, pessoas: st.pessoas, socio: socio(), clientes: clientesConhecidos() });
+  const mEvento = (r) => ({ titulo: r.titulo, tipo: r.tipo, dia: st.sel, hora_ini: r.hora_ini, hora_fim: r.hora_fim, quem: r.quem, cliente: r.cliente, local: "", obs: "", valor: r.valor != null ? String(r.valor) : "" });
+  function previa(r) {
+    if (r.tipo === "pagar") return `<span class="pv-cor t-pagar"></span><span>Conta · <span class="m">${r.valor != null ? brl(r.valor) : "sem valor"}</span> · vence ${diaTxt(st.sel)}</span>`;
+    const hora = r.hora_ini ? `<span class="m">${r.hora_ini}</span>${r.hora_fim ? ` às <span class="m">${r.hora_fim}</span>` : ""}` : "Sem hora";
+    return `<span class="pv-cor t-${r.tipo}"></span><span>${hora} · ${TIPO_NOME[r.tipo]} · ${esc(nomes(r.quem) || "ninguém")}</span>`;
+  }
+  function mAtualiza() {
+    const txt = $("#m-txt").value.trim();
+    clearTimeout(mT); mSeq++;
+    $("#m-aviso").innerHTML = "";
+    $("#m-ok").hidden = !txt;
+    if (!txt) { $("#m-pv").innerHTML = '<span class="dica">Ex.: gravação Evolution 9h às 12h com o Felipe</span>'; return; }
+    $("#m-pv").innerHTML = previa(mLe());
+    mT = setTimeout(mConferir, 220);
+  }
+  async function mConferir() {
+    if (!$("#m-txt").value.trim()) return;
+    const r = mLe(), meu = ++mSeq;
+    if (r.tipo === "pagar") return;
+    try { const c = await rpc("agenda_conferir", { p_evento: mEvento(r) }); if (meu === mSeq) mAviso(c); } catch {}
+  }
+  function mAviso(c) {
+    const conf = c.conflitos || [];
+    let h = "";
+    if (conf.length) h += `<div class="aviso-bate" role="alert"><b>Bate com:</b>${conf.map((x) => `<p>${faixa(x.hora_ini, x.hora_fim)} · ${esc(x.titulo)} · ${esc(x.em_comum)}</p>`).join("")}
+      <button type="button" class="bt alerta" id="m-forca">Marcar mesmo assim</button></div>`;
+    const cheios = (c.carga || []).filter((x) => x.total >= 2);
+    if (cheios.length) h += `<p class="aviso-cheio">Dia cheio: ${cheios.map((x) => `${esc(x.nome)} fica com ${x.total + 1} compromissos`).join(" · ")}</p>`;
+    $("#m-aviso").innerHTML = h;
+    $("#m-ok").hidden = conf.length > 0 || !$("#m-txt").value.trim();
+  }
+  async function mSalvar(forcar) {
+    const r = mLe(), ev = mEvento(r);
+    const bts = [$("#m-ok"), $("#m-forca")].filter(Boolean); bts.forEach((b) => (b.disabled = true));
+    try {
+      if (!forcar && r.tipo !== "pagar") {
+        // confere na hora, sem confiar no que já está na tela
+        const c = await rpc("agenda_conferir", { p_evento: ev }); mSeq++;
+        if (c.conflitos && c.conflitos.length) { mAviso(c); $("#m-forca").focus(); return; }
+      }
+      const res = await rpc("agenda_salvar", { p_evento: ev, p_forcar: !!forcar });
+      if (res.ok === false) { mAviso(res); $("#m-forca").focus(); return; }
+      $("#m-txt").value = ""; mAtualiza();
+      st.novo = res.evento && res.evento.id;
+      toast(r.tipo === "pagar" ? `Conta anotada · vence ${diaTxt(ev.dia)}` : `Marcado · ${diaTxt(ev.dia)}${ev.hora_ini ? " " + ev.hora_ini : ""}`);
+      await carregar();
+    } catch (er) { $("#m-aviso").innerHTML = `<p class="erro" role="alert">${esc(traduz(er.message))}</p>`; }
+    finally { bts.forEach((b) => (b.disabled = false)); }
+  }
+  function ligaMarcar() {
+    $("#m-txt").addEventListener("input", mAtualiza);
+    $("#m-txt").addEventListener("keydown", (e) => { if (e.key === "Escape" && e.target.value) { e.target.value = ""; mAtualiza(); } });
+    $("#marcar").addEventListener("submit", (e) => { e.preventDefault(); if ($("#m-txt").value.trim()) mSalvar(false); });
+    $("#m-aviso").addEventListener("click", (e) => { if (e.target.closest("#m-forca")) mSalvar(true); });
+    $("#m-det").onclick = () => { const txt = $("#m-txt").value.trim(); ficha(txt ? mEvento(mLe()) : { tipo: "gravacao", dia: st.sel }, { deMarcar: !!txt }); };
+    mAtualiza();
   }
 
-  function cartao(e, bate) {
-    const hora = e.tipo === "pagar" ? "vence" : e.hora_ini ? `${e.hora_ini}${e.hora_fim ? `<i>às ${e.hora_fim}</i>` : ""}` : "sem hora";
-    const meta = [e.cliente, e.local, e.tipo === "pagar" && e.valor != null ? brl(e.valor) : null].filter(Boolean).map(esc).join(" · ");
-    return `<button class="card t-${e.tipo} ${e.status === "feito" ? "feito" : ""} ${bate ? "bate" : ""}" data-id="${e.id}">
-      <span class="l1">${hora}${bolinhas(e.quem)}</span>
-      <span class="tit">${esc(e.titulo)}</span>
-      ${meta ? `<span class="meta">${meta}</span>` : ""}
-      ${bate ? '<span class="av">bate com outro horário</span>' : ""}</button>`;
-  }
-
+  // ───────── contas e prospects ─────────
   function desenhaContas() {
-    $("#nav").innerHTML = `<h1>Contas a pagar</h1><button class="bt cheio" id="n-novo">+ Conta</button>`;
-    $("#n-novo").onclick = () => ficha({ tipo: "pagar", dia: st.hoje });
     const total = st.contas.reduce((s, c) => s + Number(c.valor || 0), 0);
-    const grupo = (tit, l) => l.length ? `<h2>${tit}</h2>` + l.map((c) => `<button class="linha" data-id="${c.id}">
-        <span class="t">${esc(c.titulo)}</span><span class="v">${c.valor != null ? brl(c.valor) : ""}</span>
-        <span class="s">${esc([c.cliente, c.obs, c.origem === "email" ? "veio do e-mail" : null].filter(Boolean).join(" · "))}</span>
-        <span class="d ${c.dia < st.hoje ? "venc" : ""}">${c.dia < st.hoje ? "venceu " : c.dia === st.hoje ? "hoje · " : ""}${diaTxt(c.dia)}</span></button>`).join("") : "";
     const venc = st.contas.filter((c) => c.dia < st.hoje), sem = st.contas.filter((c) => c.dia >= st.hoje && c.dia <= soma(st.hoje, 7)), dep = st.contas.filter((c) => c.dia > soma(st.hoje, 7));
-    $("#main").innerHTML = st.contas.length
-      ? `<div class="cab-lista"><p>${st.contas.length} em aberto${total ? " · " + brl(total) : ""}. Toque na conta para dar baixa.</p></div><div class="lista">${grupo("Vencidas", venc)}${grupo("Próximos 7 dias", sem)}${grupo("Depois", dep)}</div>`
-      : '<p class="vazio">Nenhuma conta em aberto. As que chegarem por e-mail aparecem aqui sozinhas.</p>';
-    $("#main").querySelectorAll(".linha").forEach((l) => (l.onclick = () => ficha(st.contas.find((c) => c.id === l.dataset.id))));
+    const grupo = (tit, l) => l.length ? `<h2 class="grupo">${tit}</h2><ul class="itens">${l.map((c) => item(c, null, true)).join("")}</ul>` : "";
+    $("#v-contas").innerHTML = `<div class="lista-cab"><div><h1>Contas</h1><p>${st.contas.length ? `${plural(st.contas.length, "em aberto", "em aberto")}${total ? " · " + brl(total) : ""}${venc.length ? ` · <span class="al">${plural(venc.length, "vencida", "vencidas")}</span>` : ""}` : "Tudo pago."}</p></div>
+      <button class="bt cheio" id="c-nova">Nova conta</button></div>
+      ${st.contas.length ? grupo("Vencidas", venc) + grupo("Próximos 7 dias", sem) + grupo("Depois", dep) : '<p class="vazio">Nenhuma conta em aberto. As que chegarem por e-mail aparecem aqui sozinhas.</p>'}`;
   }
-
   function desenhaProspects() {
-    $("#nav").innerHTML = `<h1>Prospects</h1><button class="bt cheio" id="n-novo">+ Prospect</button>`;
-    $("#n-novo").onclick = () => fichaProspect();
-    const item = (p) => `<button class="linha" data-id="${p.id}"><span class="t">${esc(p.nome)}</span>
-      <span class="d ${p.proximo_dia && p.proximo_dia < st.hoje ? "venc" : ""}">${p.proximo_dia ? diaTxt(p.proximo_dia) : ""}</span>
-      <span class="s">${esc([p.contato, p.proximo_passo].filter(Boolean).join(" · ") || "sem próximo passo")}</span></button>`;
-    let html = "";
-    for (const [id, nome] of ETAPAS) { const l = st.prospects.filter((p) => p.etapa === id); if (l.length) html += `<h2>${nome} · ${l.length}</h2>` + l.map(item).join(""); }
-    $("#main").innerHTML = html ? `<div class="lista">${html}</div>` : '<p class="vazio">Nenhum prospect ainda. Use o botão acima para anotar quem está em conversa.</p>';
-    $("#main").querySelectorAll(".linha").forEach((l) => (l.onclick = () => fichaProspect(st.prospects.find((p) => p.id === l.dataset.id))));
+    const linha = (p) => `<li class="item"><button class="it-linha pr" data-pid="${p.id}">
+      <span class="it-txt"><span class="it-tit">${esc(p.nome)}</span><span class="it-sub">${esc([p.contato, p.proximo_passo].filter(Boolean).join(" · ") || "sem próximo passo")}</span></span>
+      <span class="it-data ${p.proximo_dia && p.proximo_dia < st.hoje ? "venc" : ""}">${p.proximo_dia ? diaTxt(p.proximo_dia) : ""}</span></button></li>`;
+    let h = "";
+    for (const [id, nome] of ETAPAS) { const l = st.prospects.filter((p) => p.etapa === id); if (l.length) h += `<h2 class="grupo">${nome} · ${l.length}</h2><ul class="itens">${l.map(linha).join("")}</ul>`; }
+    const abertos = st.prospects.filter((p) => !["fechado", "perdido"].includes(p.etapa)).length;
+    $("#v-prospects").innerHTML = `<div class="lista-cab"><div><h1>Prospects</h1><p>${abertos ? plural(abertos, "em conversa", "em conversa") : "Ninguém em conversa agora."}</p></div>
+      <button class="bt cheio" id="p-novo">Novo prospect</button></div>
+      ${h || '<p class="vazio">Nenhum prospect ainda. Use o botão acima para anotar quem está em conversa.</p>'}`;
   }
 
   // ───────── ficha do compromisso ─────────
   const dlg = $("#dlg");
   dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
-  function ficha(ev) {
+  function ficha(ev, opc = {}) {
     const novo = !ev.id;
-    const e = { titulo: "", tipo: "gravacao", dia: st.hoje, hora_ini: "", hora_fim: "", quem: novo && ev.tipo !== "pagar" ? [st.eu.id].filter((q) => st.pessoas.some((p) => p.id === q)) : [], cliente: "", local: "", obs: "", valor: "", ...ev };
+    const e = { titulo: "", tipo: "gravacao", dia: st.sel || st.hoje, hora_ini: "", hora_fim: "", quem: novo && ev.tipo !== "pagar" ? [st.eu.id].filter((q) => st.pessoas.some((p) => p.id === q)) : [], cliente: "", local: "", obs: "", valor: "", ...ev };
     const tipos = TIPOS.filter(([id]) => socio() || !["pagar", "prospect"].includes(id));
     dlg.innerHTML = `<form class="ficha" id="ficha" novalidate>
-      <h2>${novo ? "Marcar" : "Compromisso"}<button type="button" id="f-x" aria-label="Fechar">×</button></h2>
+      <div class="f-cab"><h2 id="f-cab" tabindex="-1">Marcar</h2><button type="button" class="x" id="f-x" aria-label="Fechar">${FECHAR}</button></div>
       <label class="campo"><span>O que é</span><input id="f-titulo" type="text" maxlength="140" autocomplete="off" placeholder="Ex.: Gravação Evolution" value="${esc(e.titulo)}"></label>
-      <fieldset class="campo"><legend>Tipo</legend><div class="chips">${tipos.map(([id, nome]) => `<label><input type="radio" name="tipo" value="${id}" ${e.tipo === id ? "checked" : ""}><span style="--c:var(--t-${id})">${nome}</span></label>`).join("")}</div></fieldset>
-      <div class="tres">
-        <label class="campo"><span id="f-dia-r">Dia</span><input id="f-dia" type="date" value="${esc(e.dia)}"></label>
+      <fieldset class="campo"><legend>Tipo</legend><div class="opcoes">${tipos.map(([id, nome]) => `<label><input type="radio" name="tipo" value="${id}" ${e.tipo === id ? "checked" : ""}><span style="--c:var(--t-${id})">${nome}</span></label>`).join("")}</div></fieldset>
+      <div class="linha3">
+        <label class="campo f-dia"><span id="f-dia-r">Dia</span><input id="f-dia" type="date" value="${esc(e.dia)}"></label>
         <label class="campo" data-hora><span>Começa</span><input id="f-ini" type="time" step="300" value="${esc(e.hora_ini || "")}"></label>
         <label class="campo" data-hora><span>Termina</span><input id="f-fim" type="time" step="300" value="${esc(e.hora_fim || "")}"></label>
       </div>
-      <div class="atalhos"><button type="button" data-d="0">hoje</button><button type="button" data-d="1">amanhã</button><button type="button" data-d="7">+1 semana</button></div>
-      <fieldset class="campo" data-quem><legend>Quem vai</legend><div class="chips">${st.pessoas.map((p) => `<label><input type="checkbox" name="quem" value="${esc(p.id)}" ${e.quem.includes(p.id) ? "checked" : ""}><span style="--c:${esc(p.cor || "#86A195")}">${esc(p.nome)}</span></label>`).join("")}</div></fieldset>
+      <fieldset class="campo" data-quem><legend>Quem vai</legend><div class="opcoes">${st.pessoas.map((p) => `<label><input type="checkbox" name="quem" value="${esc(p.id)}" ${e.quem.includes(p.id) ? "checked" : ""}><span style="--c:${esc(p.cor || "#86A195")}">${esc(p.nome)}</span></label>`).join("")}</div></fieldset>
       <label class="campo" data-valor><span>Valor (R$)</span><input id="f-valor" type="number" step="0.01" min="0" inputmode="decimal" value="${esc(e.valor ?? "")}"></label>
-      <div class="duas">
+      <div class="linha2">
         <label class="campo"><span>Cliente</span><input id="f-cliente" type="text" maxlength="80" list="f-clientes" autocomplete="off" value="${esc(e.cliente || "")}"></label>
         <label class="campo" data-local><span>Onde</span><input id="f-local" type="text" maxlength="120" autocomplete="off" value="${esc(e.local || "")}"></label>
       </div>
-      <datalist id="f-clientes">${[...new Set(st.eventos.map((x) => x.cliente).filter(Boolean))].map((c) => `<option value="${esc(c)}">`).join("")}</datalist>
+      <datalist id="f-clientes">${clientesConhecidos().map((c) => `<option value="${esc(c)}">`).join("")}</datalist>
       <label class="campo"><span>Observação</span><textarea id="f-obs" rows="2" maxlength="500">${esc(e.obs || "")}</textarea></label>
       <div id="f-aviso" aria-live="polite"></div>
-      <div class="erro" id="f-erro" role="alert"></div>
-      <div class="acoes">
+      <p class="erro" id="f-erro" role="alert"></p>
+      <div class="f-acoes">
         <button class="bt cheio" id="f-salvar" type="submit">${novo ? "Marcar" : "Salvar"}</button>
-        ${novo ? "" : `<button class="bt" type="button" id="f-feito">${e.tipo === "pagar" ? "Pago" : e.status === "feito" ? "Reabrir" : "Feito"}</button>
-        <button class="bt perigo dir" type="button" id="f-cancelar">Desmarcar</button>`}
+        ${novo ? "" : `<button class="bt" type="button" id="f-feito">${e.status === "feito" ? "Reabrir" : e.tipo === "pagar" ? "Pago" : "Feito"}</button>
+        <button class="bt perigo dir" type="button" id="f-cancelar">${e.tipo === "pagar" ? "Apagar" : "Desmarcar"}</button>`}
       </div></form>`;
     const F = (id) => $(id, dlg);
     const lido = () => ({
@@ -457,30 +935,31 @@
       cliente: F("#f-cliente").value, local: F("#f-local").value, obs: F("#f-obs").value, valor: F("#f-valor").value,
     });
     let forcar = false, seq = 0, tConf;
+    const rotSalvar = () => (forcar ? "Marcar mesmo assim" : novo ? "Marcar" : "Salvar");
     function modo() {
       const pagar = lido().tipo === "pagar";
       dlg.querySelectorAll("[data-hora],[data-quem],[data-local]").forEach((x) => (x.hidden = pagar));
       F("[data-valor]").hidden = !pagar; F("#f-dia-r").textContent = pagar ? "Vence em" : "Dia";
+      F("#f-cab").textContent = novo ? (pagar ? "Nova conta" : "Marcar") : pagar ? "Conta" : "Compromisso";
     }
     async function conferir() {
-      const v = lido(); const meu = ++seq; forcar = false; F("#f-salvar").textContent = novo ? "Marcar" : "Salvar"; F("#f-erro").textContent = "";
+      const v = lido(); const meu = ++seq; forcar = false; F("#f-salvar").textContent = rotSalvar(); F("#f-salvar").className = "bt cheio"; F("#f-erro").textContent = "";
       if (v.tipo === "pagar" || !v.dia) return (F("#f-aviso").innerHTML = "");
-      try { const r = await rpc("agenda_conferir", { p_evento: { ...v, hora_ini: v.tipo === "pagar" ? "" : v.hora_ini } }); if (meu === seq) mostraAviso(r); } catch {}
+      try { const r = await rpc("agenda_conferir", { p_evento: v }); if (meu === seq) mostraAviso(r); } catch {}
     }
     function mostraAviso(r) {
       let h = "";
       if (r.conflitos && r.conflitos.length) {
-        h += `<div class="aviso bate"><b>Bate com outro compromisso</b>${r.conflitos.map((c) => `<span class="m">${c.hora_ini}${c.hora_fim ? " às " + c.hora_fim : ""} · ${esc(c.titulo)} · ${esc(c.em_comum)}</span>`).join("")}</div>`;
-        forcar = true; F("#f-salvar").textContent = "Marcar mesmo assim";
+        h += `<div class="aviso-bate"><b>Bate com:</b>${r.conflitos.map((c) => `<p>${faixa(c.hora_ini, c.hora_fim)} · ${esc(c.titulo)} · ${esc(c.em_comum)}</p>`).join("")}</div>`;
+        forcar = true; F("#f-salvar").textContent = rotSalvar(); F("#f-salvar").className = "bt alerta";
       }
       const cheios = (r.carga || []).filter((c) => c.total >= 3);
-      if (cheios.length) h += `<div class="aviso cheio">${cheios.map((c) => `${esc(c.nome)} já tem ${c.total} compromissos nesse dia`).join(" · ")}</div>`;
+      if (cheios.length) h += `<p class="aviso-cheio">Dia cheio: ${cheios.map((c) => `${esc(c.nome)} já tem ${c.total} compromissos nesse dia`).join(" · ")}</p>`;
       F("#f-aviso").innerHTML = h;
     }
     const agenda = () => { clearTimeout(tConf); tConf = setTimeout(conferir, 220); };
     dlg.querySelectorAll("#f-dia,#f-ini,#f-fim,input[name=quem],input[name=tipo]").forEach((x) => x.addEventListener("change", () => { modo(); agenda(); }));
     F("#f-ini").addEventListener("change", () => { const i = F("#f-ini").value, f = F("#f-fim").value; if (i && f && f <= i) F("#f-fim").value = ""; });
-    dlg.querySelectorAll(".atalhos button").forEach((b) => (b.onclick = () => { F("#f-dia").value = soma(st.hoje, Number(b.dataset.d)); agenda(); }));
     F("#f-x").onclick = () => dlg.close();
     F("#ficha").onsubmit = async (evt) => {
       evt.preventDefault(); const v = lido(); const bt = F("#f-salvar");
@@ -491,34 +970,36 @@
         const r = await rpc("agenda_salvar", { p_evento: v, p_forcar: forcar });
         if (r.ok === false) { mostraAviso(r); bt.disabled = false; return; }
         dlg.close(); toast(novo ? "Marcado" : "Salvo");
-        if (v.dia < st.semana || v.dia > soma(st.semana, 6)) { st.semana = segunda(v.dia); if (v.tipo !== "pagar") st.aba = "agenda"; }
+        if (opc.deMarcar) { $("#m-txt").value = ""; mAtualiza(); }
+        st.novo = r.evento && r.evento.id; st.aberto = null;
+        if (st.aba === "agenda" && v.dia) { st.sel = v.dia; st.mes = primeiro(v.dia); }
         await carregar();
       } catch (er) { F("#f-erro").textContent = traduz(er.message); bt.disabled = false; }
     };
     if (!novo) {
-      F("#f-feito").onclick = async () => { try { await rpc("agenda_status", { p_id: e.id, p_status: e.status === "feito" ? "marcado" : "feito" }); dlg.close(); toast(e.tipo === "pagar" ? "Conta paga" : e.status === "feito" ? "Reaberto" : "Feito"); await carregar(); } catch (er) { F("#f-erro").textContent = traduz(er.message); } };
-      F("#f-cancelar").onclick = async () => { if (!confirm(`Desmarcar "${e.titulo}"?`)) return; try { await rpc("agenda_status", { p_id: e.id, p_status: "cancelado" }); dlg.close(); toast("Desmarcado"); await carregar(); } catch (er) { F("#f-erro").textContent = traduz(er.message); } };
+      F("#f-feito").onclick = () => agir("feito", e, F("#f-feito"));
+      F("#f-cancelar").onclick = () => agir("desmarcar", e, F("#f-cancelar"));
     }
-    modo(); dlg.showModal(); if (novo) F("#f-titulo").focus(); conferir();
+    modo(); dlg.showModal(); if (novo && !e.titulo) F("#f-titulo").focus(); else F("#f-cab").focus(); conferir();
   }
 
   // ───────── ficha do prospect ─────────
   function fichaProspect(pr) {
     const p = { nome: "", contato: "", etapa: "contato", proximo_passo: "", proximo_dia: "", obs: "", ...(pr || {}) };
     dlg.innerHTML = `<form class="ficha" id="ficha" novalidate>
-      <h2>${p.id ? "Prospect" : "Novo prospect"}<button type="button" id="f-x" aria-label="Fechar">×</button></h2>
-      <div class="duas">
+      <div class="f-cab"><h2>${p.id ? "Prospect" : "Novo prospect"}</h2><button type="button" class="x" id="f-x" aria-label="Fechar">${FECHAR}</button></div>
+      <div class="linha2">
         <label class="campo"><span>Empresa</span><input id="p-nome" type="text" maxlength="120" autocomplete="off" value="${esc(p.nome)}"></label>
         <label class="campo"><span>Pessoa</span><input id="p-contato" type="text" maxlength="80" autocomplete="off" value="${esc(p.contato || "")}"></label>
       </div>
-      <fieldset class="campo"><legend>Etapa</legend><div class="chips">${ETAPAS.map(([id, nome]) => `<label><input type="radio" name="etapa" value="${id}" ${p.etapa === id ? "checked" : ""}><span>${nome}</span></label>`).join("")}</div></fieldset>
-      <div class="duas">
+      <fieldset class="campo"><legend>Etapa</legend><div class="opcoes">${ETAPAS.map(([id, nome]) => `<label><input type="radio" name="etapa" value="${id}" ${p.etapa === id ? "checked" : ""}><span>${nome}</span></label>`).join("")}</div></fieldset>
+      <div class="linha2">
         <label class="campo"><span>Próximo passo</span><input id="p-passo" type="text" maxlength="160" autocomplete="off" value="${esc(p.proximo_passo || "")}"></label>
         <label class="campo"><span>Até quando</span><input id="p-dia" type="date" value="${esc(p.proximo_dia || "")}"></label>
       </div>
       <label class="campo"><span>Observação</span><textarea id="p-obs" rows="2" maxlength="600">${esc(p.obs || "")}</textarea></label>
-      <div class="erro" id="f-erro" role="alert"></div>
-      <div class="acoes"><button class="bt cheio" id="f-salvar" type="submit">Salvar</button></div></form>`;
+      <p class="erro" id="f-erro" role="alert"></p>
+      <div class="f-acoes"><button class="bt cheio" id="f-salvar" type="submit">Salvar</button></div></form>`;
     $("#f-x", dlg).onclick = () => dlg.close();
     $("#ficha", dlg).onsubmit = async (evt) => {
       evt.preventDefault();
