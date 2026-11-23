@@ -137,6 +137,50 @@
   .erro { color: #FF8F84; font-size: 15px; margin: 8px 0 0 4px; }
   .erro:empty { display: none; }
 
+  /* voz: microfone, ouvindo, entendendo */
+  .m-voz { height: 44px; min-width: 44px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; background: var(--s3); color: var(--verde); flex: none; transition: background-color .15s, color .15s; }
+  .m-voz:hover { background: var(--floresta2); }
+  .m-voz .rot { display: none; }
+  .m-voz svg { flex: none; }
+  .m-campo.ouvindo { box-shadow: 0 0 0 2px var(--verde); }
+  .m-campo.ouvindo .m-voz, .m-campo.ouvindo .m-voz:hover { background: var(--verde); color: var(--preto); }
+  .m-campo.entendendo .m-voz { opacity: .45; }
+  .voz-st { display: inline-flex; align-items: center; gap: 9px; color: var(--branco); font-weight: 600; }
+  .voz-ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--verde); flex: none; animation: pulso 1.1s ease-in-out infinite; }
+  .voz-st.lendo .voz-ponto { background: var(--salvia2); animation-duration: .7s; }
+  @keyframes pulso { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .3; transform: scale(.65); } }
+  .m-vivo { margin: 2px 4px 4px; font-size: 18px; font-weight: 600; line-height: 1.45; color: var(--branco); overflow-wrap: anywhere; }
+  .m-vivo i { font-style: normal; color: var(--salvia2); }
+  .m-vivo.lendo { color: var(--salvia2); }
+  .voz-msg { margin-top: 8px; background: var(--s2); border-radius: 14px; padding: 13px 16px 14px; display: grid; gap: 3px; }
+  .voz-msg b { font-size: 15px; font-weight: 800; color: var(--ambar); }
+  .voz-msg.al b { color: #FF8F84; }
+  .voz-msg p { margin: 0; font-size: 15px; color: var(--salvia2); }
+  #m-vozmsg:empty { display: none; }
+
+  /* voz: confirmação antes de gravar */
+  .conf { margin-top: 12px; background: var(--s2); border-radius: 18px; padding: 16px 10px 14px; display: grid; --anel: var(--s2); scroll-margin: 12px 0 12px; }
+  .conf-cab { padding: 0 8px 4px; }
+  .conf-cab h3 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; }
+  .conf-cab h3:focus { outline: none; }
+  .conf-fala { margin: 4px 0 0; font-size: 14px; color: var(--salvia); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .cf-dia { margin: 12px 0 2px 8px; font-size: 14px; font-weight: 700; color: var(--salvia2); }
+  .cf-dia b { color: var(--verde); font-weight: 800; }
+  .conf-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .cf { display: grid; grid-template-columns: minmax(0, 1fr) auto; border-radius: 14px; transition: background-color .15s; }
+  .cf:hover { background: var(--s3); }
+  .cf .it-linha { grid-template-columns: 46px 4px minmax(0, 1fr); gap: 10px; padding: 12px 0 12px 8px; }
+  .cf-tirar { width: 44px; height: 44px; margin: 8px 0 0; border-radius: 12px; display: grid; place-items: center; color: var(--salvia2); }
+  .cf-tirar:hover { background: var(--s2); color: var(--branco); }
+  .cf-duvida { justify-self: start; margin-top: 5px; display: inline-flex; align-items: flex-start; gap: 7px; font-size: 14px; font-weight: 700; line-height: 1.35; color: var(--ambar); background: rgba(255, 196, 107, .12); border-radius: 9px; padding: 4px 10px 4px 6px; }
+  .cf-duvida::before { content: "?"; width: 17px; height: 17px; margin-top: 1px; border-radius: 50%; background: var(--ambar); color: var(--preto); font-size: 11px; font-weight: 800; display: grid; place-items: center; flex: none; }
+  .cf.bate .it-hora b { color: var(--alerta); }
+  .cf .it-bate { margin-top: 3px; }
+  .cf-forca { grid-column: 1 / -1; padding: 0 12px 12px 68px; }
+  .conf-acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 14px; padding: 0 2px; }
+  .conf-acoes .bt { min-height: 48px; padding: 0 20px; }
+  .conf-nota { font-size: 14px; font-weight: 700; color: var(--alerta); }
+
   /* itens do dia (e das contas) */
   .itens { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 2px; }
   .itens:empty { display: none; }
@@ -245,6 +289,8 @@
     .dsem { margin-bottom: 4px; }
     .grade { flex: 1 1 0; min-height: calc(var(--linhas, 6) * 74px); grid-template-rows: repeat(var(--linhas, 6), minmax(0, 1fr)); }
     .painel { min-height: 0; overflow-y: auto; }
+    /* conferindo o que foi falado: o painel do dia alarga um pouco para a lista caber sem espremer */
+    .v-agenda:has(#m-conf:not([hidden])) { grid-template-columns: minmax(0, 1fr) clamp(380px, 37vw, 480px); }
     dialog { width: min(660px, calc(100vw - 48px)); }
     .ficha { gap: 15px; padding: 22px 24px 24px; }
     .ficha textarea { min-height: 64px; }
@@ -279,6 +325,16 @@
     .painel { margin-top: 12px; padding: 18px 16px 16px; }
     .dia-cab h2 { font-size: 24px; }
     .m-det { min-height: 44px; }
+    /* no celular o microfone vira o botão grande e óbvio: "Falar" */
+    .m-voz { padding: 0 16px 0 13px; background: var(--verde); color: var(--preto); font-weight: 800; font-size: 15px; }
+    .m-voz:hover { background: #45F2A6; color: var(--preto); }
+    .m-voz .rot { display: inline; }
+    .m-campo:has(.m-voz) .m-mais { background: var(--s3); color: var(--verde); }
+    .m-campo.com-texto .m-voz { padding: 0; width: 44px; background: var(--s3); color: var(--verde); }
+    .m-campo.com-texto .m-voz .rot { display: none; }
+    .cf-forca { padding-left: 10px; }
+    .conf { scroll-margin-top: 76px; }   /* não fica embaixo do topo fixo */
+    .conf-acoes .bt.cheio { flex: 1 1 auto; }
     .it-linha { grid-template-columns: 48px 4px minmax(0, 1fr) auto; gap: 10px; padding: 12px 10px 12px 8px; }
     .it-mais { padding: 0 10px 12px 10px; }
     .it-acoes .bt { flex: 1; min-height: 48px; }
@@ -310,6 +366,10 @@
   const SETA_D = '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const MAIS = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
   const FECHAR = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  const MIC = '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="2" width="6" height="10.5" rx="3" fill="currentColor"/><path d="M4.25 9.25a5.75 5.75 0 0 0 11.5 0M10 15v3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
+  // voz: ditado do Chrome (Web Speech API) + leitura pelo Claude no serviço local/voz.mjs. Sem ditado no navegador, o botão não aparece.
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  const VOZ = String(CFG.voz || (CFG.local ? "http://127.0.0.1:54392" : "")).replace(/\/+$/, "");
   const TIPOS = [["gravacao", "Gravação"], ["cliente", "Cliente"], ["reuniao", "Reunião"], ["prospect", "Prospect"], ["pagar", "Pagar"], ["outro", "Outro"]];
   const TIPO_NOME = Object.fromEntries(TIPOS);
   const ETAPAS = [["contato", "Contato"], ["analise", "Análise enviada"], ["reuniao", "Reunião"], ["proposta", "Proposta"], ["fechado", "Fechado"], ["perdido", "Perdido"]];
@@ -487,7 +547,7 @@
   }
   // ── interpretador:fim ──
 
-  const st = { chave: null, eu: null, pessoas: [], hoje: iso(new Date()), mes: null, sel: null, eventos: [], contas: [], prospects: [], aba: "agenda", aberto: null, novo: null };
+  const st = { chave: null, eu: null, pessoas: [], hoje: iso(new Date()), mes: null, sel: null, eventos: [], contas: [], prospects: [], aba: "agenda", aberto: null, novo: null, conf: null };
   const guarda = { ler: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, por: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} } };
 
   async function rpc(fn, args) {
@@ -614,12 +674,16 @@
             <form class="marcar" id="marcar" autocomplete="off" novalidate>
               <div class="m-campo">
                 <span class="m-mais" aria-hidden="true">${MAIS}</span>
-                <input id="m-txt" type="text" maxlength="160" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="Marcar compromisso: escreva e dê Enter" aria-describedby="m-pv">
+                <input id="m-txt" type="text" maxlength="${SR || VOZ ? 600 : 160}" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="Marcar compromisso: escreva e dê Enter" aria-describedby="m-pv">
+                ${SR ? `<button class="m-voz" id="m-voz" type="button" aria-pressed="false" aria-label="Falar para marcar" title="Falar para marcar">${MIC}<span class="rot">Falar</span></button>` : ""}
                 <button class="m-ok" id="m-ok" type="submit" hidden>Marcar</button>
               </div>
               <div class="m-previa"><span class="pv" id="m-pv" aria-live="polite"></span><button type="button" class="m-det" id="m-det">detalhes</button></div>
+              <p class="m-vivo" id="m-vivo" aria-live="polite" hidden></p>
+              <div id="m-vozmsg" aria-live="polite"></div>
               <div id="m-aviso" aria-live="polite"></div>
             </form>
+            <section class="conf" id="m-conf" aria-label="Confirmar o que entendi" hidden></section>
             <ul class="itens" id="itens"></ul>
           </section>
         </div>
@@ -824,16 +888,20 @@
     return `<span class="pv-cor t-${r.tipo}"></span><span>${hora} · ${TIPO_NOME[r.tipo]} · ${esc(nomes(r.quem) || "ninguém")}</span>`;
   }
   function mAtualiza() {
+    if (voz.estado) return vozVivo();
     const txt = $("#m-txt").value.trim();
     clearTimeout(mT); mSeq++;
     $("#m-aviso").innerHTML = "";
     $("#m-ok").hidden = !txt;
+    $(".m-campo").classList.toggle("com-texto", !!txt);
     if (!txt) { $("#m-pv").innerHTML = '<span class="dica">Ex.: gravação Evolution 9h às 12h com o Felipe</span>'; return; }
+    // frase com dia ou com vários compromissos: o Enter manda para a leitura pelo Claude (não confere agora: o dia ainda não foi lido)
+    if (vaiPraVoz(txt)) { $("#m-pv").innerHTML = '<span class="pv-cor" style="--tc:var(--verde)"></span><span>Tem dia na frase · Enter para conferir</span>'; return; }
     $("#m-pv").innerHTML = previa(mLe());
     mT = setTimeout(mConferir, 220);
   }
   async function mConferir() {
-    if (!$("#m-txt").value.trim()) return;
+    if (!$("#m-txt").value.trim() || voz.estado || vaiPraVoz($("#m-txt").value.trim())) return;
     const r = mLe(), meu = ++mSeq;
     if (r.tipo === "pagar") return;
     try { const c = await rpc("agenda_conferir", { p_evento: mEvento(r) }); if (meu === mSeq) mAviso(c); } catch {}
@@ -867,12 +935,273 @@
     finally { bts.forEach((b) => (b.disabled = false)); }
   }
   function ligaMarcar() {
-    $("#m-txt").addEventListener("input", mAtualiza);
-    $("#m-txt").addEventListener("keydown", (e) => { if (e.key === "Escape" && e.target.value) { e.target.value = ""; mAtualiza(); } });
-    $("#marcar").addEventListener("submit", (e) => { e.preventDefault(); if ($("#m-txt").value.trim()) mSalvar(false); });
+    $("#m-txt").addEventListener("input", () => { vozMsg(""); mAtualiza(); });
+    $("#m-txt").addEventListener("keydown", (e) => { if (e.key === "Escape" && e.target.value && !voz.estado) { e.target.value = ""; vozMsg(""); mAtualiza(); } });
+    $("#marcar").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const txt = $("#m-txt").value.trim();
+      if (!txt || voz.estado) return;
+      if (vaiPraVoz(txt)) vozInterpretar(txt); else mSalvar(false);
+    });
     $("#m-aviso").addEventListener("click", (e) => { if (e.target.closest("#m-forca")) mSalvar(true); });
     $("#m-det").onclick = () => { const txt = $("#m-txt").value.trim(); ficha(txt ? mEvento(mLe()) : { tipo: "gravacao", dia: st.sel }, { deMarcar: !!txt }); };
+    if ($("#m-voz")) $("#m-voz").onclick = vozBotao;
+    $("#m-conf").addEventListener("click", cliqueConf);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && voz.estado === "ouvindo") { e.preventDefault(); vozCancela(); } });
     mAtualiza();
+  }
+
+  // ───────── voz: ditar, ler com o Claude (local/voz.mjs) e confirmar antes de gravar ─────────
+  // Frase digitada com dia ("quarta", "amanhã", "dia 20") ou com cara de vários compromissos vai para a mesma leitura.
+  const semAcento = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const DIA_NA_FRASE = /(?<![a-z0-9])(hoje|amanha|depois de amanha|segunda|terca|quarta|quinta|sexta|sabado|domingo|semana que vem|proxima semana|mes que vem)(?![a-z0-9])|(?<![a-z0-9])dia\s+\d{1,2}(?![\d:h])|(?<![\d/])\d{1,2}\/\d{1,2}(?![\d/])|(?<![a-z0-9])\d{1,2}\s+de\s+(janeiro|fevereiro|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)(?![a-z])/;
+  function pedeLeitura(t) {
+    const n = semAcento(t);
+    if (DIA_NA_FRASE.test(n)) return true;
+    if (n.split(/[;!?\n]+|\.(?=\s|$)/).filter((s) => s.trim().length > 3).length >= 2) return true;   // "1.234,56" não é ponto final
+    // duas horas soltas (fora de uma faixa como "9 às 12") = dois compromissos
+    const sem = n.replace(/(?:\b(?:das?|de)\s+)?(?<![\d:])\d{1,2}(?:[:h]\d{2})?\s*h?\s*(?:as|a|ate|-|–)\s*\d{1,2}(?:[:h]\d{2})?\s*h?(?![\d:])/g, " ");
+    return (sem.match(/\bas\s+\d{1,2}(?![\d,.])|(?<![\d:,.])\d{1,2}(?::\d{2}|h\d{0,2}|\s*horas?\b)(?![\d,.])/g) || []).length >= 2;
+  }
+  const vaiPraVoz = (t) => !!VOZ && t !== voz.falhou && pedeLeitura(t);
+
+  const voz = { estado: null, rec: null, base: "", final: "", parcial: "", erro: null, cancelado: false, seq: 0, falhou: null, lendo: "" };
+  function vozBotao() {
+    if (voz.estado === "ouvindo") return vozPara();
+    if (!voz.estado) vozOuve();
+  }
+  function vozOuve() {
+    vozMsg(""); confFecha(true);
+    Object.assign(voz, { erro: null, cancelado: false, final: "", parcial: "", base: $("#m-txt").value.trim() });
+    try {
+      const rec = new SR();
+      rec.lang = "pt-BR"; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+      rec.onresult = vozResultado;
+      rec.onerror = (e) => { const c = e && e.error; if (c && c !== "aborted") voz.erro = c; };
+      rec.onend = vozFim;
+      voz.rec = rec; voz.estado = "ouvindo"; vozDesenha();
+      rec.start();
+    } catch (er) { voz.rec = null; voz.estado = null; vozDesenha(); vozMsg(msgMic("start")); }
+  }
+  // o reconhecimento chama esta função a cada pedaço ouvido (parcial ou final): o texto aparece ao vivo
+  function vozResultado(e) {
+    let fin = "", parc = "";
+    for (let i = 0; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) fin += " " + r[0].transcript; else parc += " " + r[0].transcript; }
+    voz.final = fin.replace(/\s+/g, " ").trim(); voz.parcial = parc.replace(/\s+/g, " ").trim();
+    vozVivo();
+  }
+  function vozPara() { try { voz.rec.stop(); } catch { vozFim(); } }
+  function vozCancela() { voz.cancelado = true; try { voz.rec.abort(); } catch { vozFim(); } }
+  // fim da escuta (tocou de novo, o Chrome parou sozinho ou deu erro)
+  function vozFim() {
+    if (voz.estado !== "ouvindo") return;
+    voz.rec = null; voz.estado = null;
+    const dito = [voz.final, voz.parcial].filter(Boolean).join(" ").trim();
+    const fala = [voz.base, dito].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+    vozDesenha();
+    if (voz.cancelado) return;
+    if (!dito) return vozMsg(voz.erro ? msgMic(voz.erro) : MSG_NADA_OUVIDO);
+    if (VOZ) return vozInterpretar(fala);
+    $("#m-txt").value = fala; mAtualiza(); $("#m-txt").focus();   // sem serviço de voz: dita para o campo, jeito simples
+  }
+  async function vozInterpretar(fala) {
+    const meu = ++voz.seq;
+    voz.estado = "lendo"; voz.lendo = fala; $("#m-txt").value = ""; vozMsg(""); confFecha(true); vozDesenha();
+    let j = null, falha = "";
+    try {
+      // text/plain: pedido simples, sem pré-voo de CORS
+      const r = await fetch(`${VOZ}/interpretar`, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: JSON.stringify({ p_chave: st.chave, texto: fala, dia_selecionado: st.sel }), signal: AbortSignal.timeout(50000) });
+      j = await r.json().catch(() => null);
+      if (r.status === 401) falha = "Esse link não vale mais";
+      else if (!j || !Array.isArray(j.compromissos)) falha = "O serviço de voz respondeu errado";
+      else if (j.erro) falha = `A leitura falhou (${j.erro})`;
+    } catch (er) { falha = er && er.name === "TimeoutError" ? "O serviço de voz demorou demais" : "O serviço de voz não respondeu"; }
+    if (meu !== voz.seq) return;
+    voz.estado = null; voz.lendo = "";
+    const lista = falha ? [] : confLimpa(j.compromissos);
+    if (lista.length) { $("#m-txt").value = ""; vozDesenha(); return confAbre(fala, lista); }
+    // nada lido: a fala fica no campo e o próximo Enter vai pelo jeito simples
+    voz.falhou = fala; $("#m-txt").value = fala; vozDesenha();
+    vozMsg(falha ? msgFalha(falha) : MSG_SEM_COMPROMISSO);
+  }
+  function vozDesenha() {
+    const ouv = voz.estado === "ouvindo", lendo = voz.estado === "lendo", bt = $("#m-voz");
+    $(".m-campo").classList.toggle("ouvindo", ouv); $(".m-campo").classList.toggle("entendendo", lendo);
+    if (bt) {
+      bt.setAttribute("aria-pressed", String(ouv)); bt.disabled = lendo;
+      bt.setAttribute("aria-label", ouv ? "Terminar de falar" : "Falar para marcar"); bt.title = ouv ? "Terminar de falar" : "Falar para marcar";
+      bt.querySelector(".rot").textContent = ouv ? "Pronto" : "Falar";
+    }
+    $("#m-txt").readOnly = ouv || lendo;
+    $("#m-txt").placeholder = ouv ? "Pode falar…" : lendo ? "Entendendo…" : `Marcar em ${diaTxt(st.sel)}…`;
+    $("#m-det").hidden = ouv || lendo;
+    if (ouv || lendo) { clearTimeout(mT); mSeq++; $("#m-ok").hidden = true; $("#m-aviso").innerHTML = ""; $(".m-campo").classList.remove("com-texto"); vozVivo(); }
+    else { vozVivo(); mAtualiza(); }
+  }
+  function vozVivo() {
+    const vivo = $("#m-vivo");
+    if (voz.estado === "ouvindo") {
+      $("#m-pv").innerHTML = `<span class="voz-st"><span class="voz-ponto" aria-hidden="true"></span>Ouvindo · ${largo() ? "clique no microfone" : "toque em Pronto"} para terminar</span>`;
+      const dito = [voz.base, voz.final].filter(Boolean).join(" ");
+      vivo.className = "m-vivo"; vivo.hidden = !(dito || voz.parcial);
+      vivo.innerHTML = `${esc(dito)}${voz.parcial ? `${dito ? " " : ""}<i>${esc(voz.parcial)}</i>` : ""}`;
+    } else if (voz.estado === "lendo") {
+      $("#m-pv").innerHTML = '<span class="voz-st lendo"><span class="voz-ponto" aria-hidden="true"></span>Entendendo o que você falou…</span>';
+      vivo.className = "m-vivo lendo"; vivo.hidden = false; vivo.textContent = voz.lendo;
+    } else { vivo.hidden = true; vivo.textContent = ""; }
+  }
+  const vozMsg = (h) => { const el = $("#m-vozmsg"); if (el) el.innerHTML = h; };
+  const vMsg = (cl, tit, txt) => `<div class="voz-msg ${cl}" role="${cl === "al" ? "alert" : "status"}"><b>${tit}</b><p>${txt}</p></div>`;
+  const MSG_NADA_OUVIDO = vMsg("", "Não ouvi nada.", "Toque no microfone e fale perto dele. Pode falar vários compromissos de uma vez.");
+  const MSG_SEM_COMPROMISSO = vMsg("", "Não achei compromisso nessa fala.", "Diga o que é, o dia e a hora, por exemplo: “quarta dentista às 4”. O texto ficou no campo, se quiser ajustar.");
+  const msgFalha = (motivo) => vMsg("", "Não consegui ler o dia agora.", `${esc(motivo)}. O texto ficou no campo do jeito simples: marca em ${diaTxt(st.sel)}. Confira a prévia antes de dar Enter.`);
+  function msgMic(c) {
+    if (c === "not-allowed" || c === "service-not-allowed") return vMsg("al", "O microfone está bloqueado para a agenda.", `No Chrome: menu ⋮ › Configurações › Privacidade e segurança › Configurações do site › Microfone. Permita ${esc(location.host)} e toque no microfone de novo.`);
+    if (c === "audio-capture") return vMsg("al", "Não achei o microfone.", "Confira se o fone ou o microfone está ligado no computador e tente de novo.");
+    if (c === "network") return vMsg("al", "O ditado precisa de internet.", "O Chrome manda o áudio para o Google transcrever. Confira a conexão e tente de novo, ou escreva no campo.");
+    if (c === "language-not-supported") return vMsg("al", "Este navegador não dita em português.", "Use o Chrome atualizado ou escreva no campo.");
+    if (c === "no-speech") return MSG_NADA_OUVIDO;
+    return vMsg("al", "Não consegui ligar o microfone.", "Feche outros programas que estejam usando o microfone e tente de novo.");
+  }
+
+  // ── confirmação: lista do que foi entendido; só grava no "Marcar" ──
+  let confK = 0, confSeq = 0;
+  function confLimpa(l) {
+    const hm = (h) => (typeof h === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(h) ? h : "");
+    return (Array.isArray(l) ? l : []).slice(0, 12).filter((c) => c && typeof c.titulo === "string" && c.titulo.trim() && /^\d{4}-\d{2}-\d{2}$/.test(c.dia || "") && TIPO_NOME[c.tipo]).map((c) => {
+      let tipo = c.tipo; if (!socio() && tipo === "pagar") tipo = "outro"; if (!socio() && tipo === "prospect") tipo = "reuniao";
+      const ini = hm(c.hora_ini), fim = hm(c.hora_fim), conta = tipo === "pagar";
+      return { k: `v${++confK}`, titulo: c.titulo.trim().slice(0, 140), tipo, dia: c.dia, hora_ini: conta ? "" : ini, hora_fim: conta || !ini || fim <= ini ? "" : fim,
+        quem: conta ? [] : (Array.isArray(c.quem) ? c.quem : []).filter((q, i, a) => st.pessoas.some((p) => p.id === q) && a.indexOf(q) === i),
+        cliente: String(c.cliente || "").slice(0, 80), local: String(c.local || "").slice(0, 120), valor: conta && Number.isFinite(Number(c.valor)) && c.valor !== null && c.valor !== "" ? Number(c.valor) : null,
+        duvida: String(c.duvida || "").slice(0, 160), conflitos: [], naLista: [], erro: "" };
+    });
+  }
+  const confEv = (it) => ({ titulo: it.titulo, tipo: it.tipo, dia: it.dia, hora_ini: it.hora_ini, hora_fim: it.hora_fim, quem: it.tipo === "pagar" ? [] : it.quem, cliente: it.cliente, local: it.tipo === "pagar" ? "" : it.local, obs: "", valor: it.tipo === "pagar" && it.valor != null ? String(it.valor) : "" });
+  const confBate = (it) => it.conflitos.length > 0 || it.naLista.length > 0;
+  const entre = (a, b) => {
+    if (a.dia !== b.dia || a.tipo === "pagar" || b.tipo === "pagar" || !a.hora_ini || !b.hora_ini || !a.quem.some((q) => b.quem.includes(q))) return false;
+    const af = min(a.hora_fim) ?? min(a.hora_ini) + 60, bf = min(b.hora_fim) ?? min(b.hora_ini) + 60;
+    return min(a.hora_ini) < bf && min(b.hora_ini) < af;
+  };
+  function confAbre(fala, itens) {
+    st.conf = { fala, itens, conferido: false, salvando: false };
+    desenhaConf();
+    confMostra(); $("#conf-tit").focus({ preventScroll: true });
+    confConferir();
+  }
+  function confFecha(quieto) {
+    if (!st.conf) return;
+    st.conf = null; confSeq++; desenhaConf();
+    if (!quieto) $("#m-txt").focus();
+  }
+  // horário batendo: com o que já está na agenda (banco) e entre os próprios itens da lista
+  async function confConferir() {
+    const c = st.conf; if (!c) return;
+    const meu = ++confSeq;
+    const res = await Promise.all(c.itens.map((it) => (it.tipo === "pagar" ? { conflitos: [] } : rpc("agenda_conferir", { p_evento: confEv(it) }).catch(() => ({ conflitos: [] })))));
+    if (meu !== confSeq || c !== st.conf) return;
+    c.itens.forEach((it, i) => { it.conflitos = res[i].conflitos || []; });
+    for (const a of c.itens) a.naLista = c.itens.filter((b) => b !== a && entre(a, b));
+    const primeira = !c.conferido;
+    c.conferido = true; desenhaConf();
+    if (primeira) confMostra();   // o aviso de horário batendo pode ter crescido a lista
+  }
+  // a lista inteira à vista (se couber; senão, do começo)
+  function confMostra() {
+    const el = $("#m-conf"); if (el.hidden) return;
+    const caixa = largo() ? $("#painel").getBoundingClientRect() : { top: 76, bottom: innerHeight };
+    el.scrollIntoView({ block: el.getBoundingClientRect().height > caixa.bottom - caixa.top - 24 ? "start" : "nearest" });
+  }
+  const diaLongo = (d) => {
+    const D = dt(d), rel = d === st.hoje ? "Hoje" : d === soma(st.hoje, 1) ? "Amanhã" : "";
+    const t = `${DSEM_LONGO[D.getDay()]}, ${D.getDate()} de ${MES_LONGO[D.getMonth()]}`;
+    return rel ? `<b>${rel}</b> · ${t}` : t.charAt(0).toUpperCase() + t.slice(1);
+  };
+  const eLista = (l) => (l.length > 1 ? `${l.slice(0, -1).join(", ")} e ${l[l.length - 1]}` : l.join(""));
+  function cfItem(it) {
+    const conta = it.tipo === "pagar";
+    const hora = conta ? '<b class="sh">conta</b>' : it.hora_ini ? `<b>${it.hora_ini}</b>${it.hora_fim ? `<i>${it.hora_fim}</i>` : ""}` : '<b class="sh">sem hora</b>';
+    const sub = conta ? ["Conta", it.valor != null ? brl(it.valor) : "sem valor", it.cliente] : [TIPO_NOME[it.tipo], eLista(it.quem.map((q) => pessoa(q).nome)) || "ninguém", it.cliente, it.local];
+    const bate = [...it.conflitos.map((x) => `${x.hora_ini}${x.hora_fim ? ` às ${x.hora_fim}` : ""} · ${x.titulo}${x.em_comum ? ` · ${x.em_comum}` : ""}`),
+      ...it.naLista.map((x) => `${x.hora_ini}${x.hora_fim ? ` às ${x.hora_fim}` : ""} · ${x.titulo} (desta lista)`)];
+    return `<li class="cf t-${it.tipo}${bate.length ? " bate" : ""}" data-k="${it.k}">
+      <button type="button" class="it-linha" data-cf="corrigir" title="Tocar para corrigir">
+        <span class="it-hora">${hora}</span><span class="it-cor" aria-hidden="true"></span>
+        <span class="it-txt"><span class="it-tit">${esc(it.titulo)}</span><span class="it-sub">${sub.filter(Boolean).map(esc).join(" · ")}</span>${it.duvida ? `<span class="cf-duvida">${esc(it.duvida.charAt(0).toUpperCase() + it.duvida.slice(1))}</span>` : ""}${bate.length ? `<span class="it-bate">Bate com ${esc(bate.join("; "))}</span>` : ""}${it.erro ? `<span class="it-bate">${esc(it.erro)}</span>` : ""}</span>
+      </button>
+      <button type="button" class="cf-tirar" data-cf="tirar" aria-label="Tirar ${esc(it.titulo)} da lista" title="Tirar da lista">${FECHAR}</button>
+      ${bate.length ? '<div class="cf-forca"><button type="button" class="bt alerta" data-cf="forcar">Marcar mesmo assim</button></div>' : ""}</li>`;
+  }
+  function desenhaConf() {
+    const el = $("#m-conf"), c = st.conf;
+    if (!c || !c.itens.length) { el.hidden = true; el.innerHTML = ""; return; }
+    const n = c.itens.length, fora = c.itens.filter(confBate).length;
+    let h = `<div class="conf-cab"><h3 id="conf-tit" tabindex="-1">Entendi ${plural(n, "compromisso", "compromissos")}</h3>${c.fala ? `<p class="conf-fala">“${esc(c.fala)}”</p>` : ""}</div>`;
+    let dia = null;
+    for (const it of c.itens) {
+      if (it.dia !== dia) { h += `${dia ? "</ul>" : ""}<h4 class="cf-dia">${diaLongo(it.dia)}</h4><ul class="conf-lista">`; dia = it.dia; }
+      h += cfItem(it);
+    }
+    const rot = c.salvando ? "Marcando…" : !c.conferido ? "Conferindo…" : n === 1 ? "Marcar" : "Marcar todos";
+    h += `</ul><div class="conf-acoes"><button type="button" class="bt cheio" data-cf="todos"${!c.conferido || c.salvando || fora === n ? " disabled" : ""}>${rot}</button>
+      <button type="button" class="bt" data-cf="fechar">Cancelar</button>${fora && c.conferido ? `<span class="conf-nota">${fora === 1 ? (n === 1 ? "Bate horário: confira antes" : "1 fica de fora: bate horário") : `${fora} ficam de fora: batem horário`}</span>` : ""}</div>`;
+    el.innerHTML = h; el.hidden = false;
+  }
+  function confTira(k) {
+    const c = st.conf; if (!c) return;
+    c.itens = c.itens.filter((x) => x.k !== k);
+    if (!c.itens.length) return confFecha();
+    for (const a of c.itens) a.naLista = c.itens.filter((b) => b !== a && entre(a, b));
+    desenhaConf(); $("#conf-tit").focus({ preventScroll: true });
+  }
+  // depois de gravar: a grade vai para o mês (e o dia) do primeiro item gravado
+  async function confDepois(feitos) {
+    if (!feitos.length) return;
+    const p = feitos[0];
+    st.sel = p.it.dia; st.mes = primeiro(p.it.dia); st.aberto = null; st.novo = p.id;
+    toast(feitos.length === 1 ? `Marcado · ${diaTxt(p.it.dia)}${p.it.hora_ini ? " " + p.it.hora_ini : ""}` : `Marcados ${feitos.length} compromissos`);
+    if (st.aba !== "agenda") st.aba = "agenda";
+    await carregar(); mAtualiza();
+  }
+  async function confMarcarTodos() {
+    const c = st.conf; if (!c || c.salvando || !c.conferido) return;
+    c.salvando = true; desenhaConf();
+    const feitos = [];
+    for (const it of c.itens.filter((x) => !confBate(x))) {
+      try {
+        const r = await rpc("agenda_salvar", { p_evento: confEv(it), p_forcar: false });
+        if (r.ok === false) { it.conflitos = r.conflitos || []; continue; }   // bateu com algo que acabou de entrar
+        feitos.push({ it, id: r.evento && r.evento.id });
+      } catch (er) { it.erro = traduz(er.message); }
+    }
+    c.salvando = false;
+    c.itens = c.itens.filter((x) => !feitos.some((f) => f.it === x));
+    if (!c.itens.length) st.conf = null;
+    desenhaConf();
+    await confDepois(feitos);
+    if (st.conf) confConferir();
+  }
+  async function confForca(it, bt) {
+    bt.disabled = true;
+    try {
+      const r = await rpc("agenda_salvar", { p_evento: confEv(it), p_forcar: true });
+      st.conf.itens = st.conf.itens.filter((x) => x !== it);
+      if (!st.conf.itens.length) st.conf = null;
+      desenhaConf();
+      await confDepois([{ it, id: r.evento && r.evento.id }]);
+      if (st.conf) confConferir();
+    } catch (er) { it.erro = traduz(er.message); desenhaConf(); }
+  }
+  function cliqueConf(e) {
+    const b = e.target.closest("[data-cf]"); const c = st.conf; if (!b || !c) return;
+    const a = b.dataset.cf;
+    if (a === "fechar") return confFecha();
+    if (a === "todos") return confMarcarTodos();
+    const li = b.closest("[data-k]"), it = li && c.itens.find((x) => x.k === li.dataset.k); if (!it) return;
+    if (a === "tirar") return confTira(it.k);
+    if (a === "forcar") return confForca(it, b);
+    if (a === "corrigir") return ficha(confEv(it), { daVoz: it.k });
   }
 
   // ───────── contas e prospects ─────────
@@ -971,6 +1300,11 @@
         if (r.ok === false) { mostraAviso(r); bt.disabled = false; return; }
         dlg.close(); toast(novo ? "Marcado" : "Salvo");
         if (opc.deMarcar) { $("#m-txt").value = ""; mAtualiza(); }
+        if (opc.daVoz && st.conf) {   // corrigido pela ficha: sai da lista de confirmação
+          st.conf.itens = st.conf.itens.filter((x) => x.k !== opc.daVoz);
+          if (!st.conf.itens.length) st.conf = null;
+          desenhaConf(); if (st.conf) confConferir();
+        }
         st.novo = r.evento && r.evento.id; st.aberto = null;
         if (st.aba === "agenda" && v.dia) { st.sel = v.dia; st.mes = primeiro(v.dia); }
         await carregar();
